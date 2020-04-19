@@ -13,5 +13,8 @@ namespace ATACK_Marketing_API.Models {
         [Required]
         [ForeignKey("VendorId")]
         public virtual Vendor Vendor { get; set; }
+        [Required]
+        [ForeignKey("EventId")]
+        public virtual Event Event { get; set; }
     }
 }
