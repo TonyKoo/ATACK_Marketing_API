@@ -83,5 +83,29 @@ namespace ATACK_Marketing_API.Controllers
                                       IsAdmin = false
                                   });
         }
+
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="404">Cannot Find Users Account</response>   
+        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
+        //[SwaggerOperation(
+        //    Summary = "Get the user account from the database",
+        //    Description = "Requires Authentication"
+        //)]
+        [Produces("application/json")]
+        [HttpGet("eventlist")]
+        public IActionResult GetUsersEvents() {
+            var currentUser = HttpContext.User;
+            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+            User theUser = _context.Users.FirstOrDefault(u => u.Uid == uid);
+
+            if (theUser == null) {
+                return NotFound(new { Message = "User Not Found" });
+            }
+
+            EventGuestRepository eventGuestRepo = new EventGuestRepository(_context);
+
+            return Ok(eventGuestRepo.GetUsersEvents(theUser));
+        }
     }
 }
