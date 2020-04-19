@@ -68,7 +68,7 @@ namespace ATACK_Marketing_API.Controllers
             return Ok(new EventDetailViewModel {
                 EventId = theEvent.EventId,
                 EventName = theEvent.EventName,
-                DateTime = theEvent.EventDateTime,
+                EventStartDateTime = theEvent.EventDateTime,
                 NumOfVendors = theEvent.EventVendors.Count,
                 Venue = theEvent.Venue
             });

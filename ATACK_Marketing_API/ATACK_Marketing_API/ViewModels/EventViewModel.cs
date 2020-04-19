@@ -12,7 +12,7 @@ namespace ATACK_Marketing_API.ViewModels {
     public class EventDetailViewModel {
         public int EventId { get; set; }
         public String EventName { get; set; }
-        public DateTime DateTime { get; set; }
+        public DateTime EventStartDateTime { get; set; }
         public int NumOfVendors { get; set; }
         public Venue Venue { get; set; }
     }

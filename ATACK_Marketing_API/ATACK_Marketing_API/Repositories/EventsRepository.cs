@@ -19,7 +19,7 @@ namespace ATACK_Marketing_API.Repositories {
                                                                       .Select(e => new EventDetailViewModel {
                                                                           EventId = e.EventId,
                                                                           EventName = e.EventName,
-                                                                          DateTime = e.EventDateTime,
+                                                                          EventStartDateTime = e.EventDateTime,
                                                                           NumOfVendors = e.EventVendors.Count,
                                                                           Venue = e.Venue
                                                                       })
