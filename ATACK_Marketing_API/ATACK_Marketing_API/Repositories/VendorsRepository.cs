@@ -16,17 +16,10 @@ namespace ATACK_Marketing_API.Repositories {
 
         public EventVendorsViewModel GetAllEventVendors(Event theEvent) {
             ICollection<EventVendorMinDetailViewModel> vendors = _context.EventVendors.Where(ev => ev.Event == theEvent)
-                                                                                   .OrderBy(ev => ev.Vendor.VendorName)
+                                                                                   .OrderBy(ev => ev.Vendor.Name)
                                                                                    .Select(ev => new EventVendorMinDetailViewModel { 
                                                                                        EventVendorId = ev.EventVendorId,
-                                                                                       VendorName = ev.Vendor.VendorName,
-                                                                                       //PhoneNumber = ev.Vendor.PhoneNumber,
-                                                                                       //Email = ev.Vendor.Email,
-                                                                                       //Address = ev.Vendor.Address,
-                                                                                       //City = ev.Vendor.City,
-                                                                                       //Province = ev.Vendor.Province,
-                                                                                       //PostalCode = ev.Vendor.PostalCode,
-                                                                                       //Country = ev.Vendor.Country,
+                                                                                       VendorName = ev.Vendor.Name,
                                                                                        NumOfProducts = ev.Products.Count
                                                                                    })
                                                                                    .ToList();
@@ -44,14 +37,10 @@ namespace ATACK_Marketing_API.Repositories {
             EventVendorDetailViewModel vendor = _context.EventVendors.Where(ev => ev.Event == theEvent && ev == theEventVendor)
                                                                                    .Select(ev => new EventVendorDetailViewModel {
                                                                                        EventVendorId = ev.EventVendorId,
-                                                                                       VendorName = ev.Vendor.VendorName,
-                                                                                       PhoneNumber = ev.Vendor.PhoneNumber,
+                                                                                       VendorName = ev.Vendor.Name,
                                                                                        Email = ev.Vendor.Email,
-                                                                                       Address = ev.Vendor.Address,
-                                                                                       City = ev.Vendor.City,
-                                                                                       Province = ev.Vendor.Province,
-                                                                                       PostalCode = ev.Vendor.PostalCode,
-                                                                                       Country = ev.Vendor.Country,
+                                                                                       Description = ev.Vendor.Description,
+                                                                                       Website = ev.Vendor.Website,
                                                                                        NumOfProducts = ev.Products.Count,
                                                                                        Products = _context.Products.Where(pr => pr.EventVendor == theEventVendor)
                                                                                                                    .OrderBy(pr => pr.ProductName)
