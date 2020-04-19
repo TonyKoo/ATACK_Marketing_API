@@ -42,7 +42,7 @@ namespace ATACK_Marketing_API.Controllers
             Event theEvent = _context.Events.FirstOrDefault(e => e.EventId == eventId);
 
             if (theEvent == null) {
-                return BadRequest(new { Message = "Event Not Found" });
+                return NotFound(new { Message = "Event Not Found" });
             }
 
             VendorsRepository vendorsRepo = new VendorsRepository(_context);
