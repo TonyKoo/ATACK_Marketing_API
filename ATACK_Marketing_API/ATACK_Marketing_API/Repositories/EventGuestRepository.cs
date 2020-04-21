@@ -31,12 +31,12 @@ namespace ATACK_Marketing_API.Repositories {
             bool isSuccessful = false;
 
             try {
-                EventGuest newSubscription = new EventGuest {
+                EventGuest joinEvent = new EventGuest {
                     User = theUser,
                     Event = theEvent
                 };
 
-                _context.EventGuests.Add(newSubscription);
+                _context.EventGuests.Add(joinEvent);
                 _context.SaveChanges();
                 isSuccessful = true;
             } catch (Exception) {
