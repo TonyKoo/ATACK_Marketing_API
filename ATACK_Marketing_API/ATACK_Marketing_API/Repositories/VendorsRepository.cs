@@ -36,17 +36,17 @@ namespace ATACK_Marketing_API.Repositories {
         public EventVendorViewModel GetEventVendor(Event theEvent, EventVendor theEventVendor) {
             EventVendorDetailViewModel vendor = _context.EventVendors.Where(ev => ev.Event == theEvent && ev == theEventVendor)
                                                                                    .Select(ev => new EventVendorDetailViewModel {
-                                                                                       EventVendorId = ev.EventVendorId,
-                                                                                       VendorName = ev.Vendor.Name,
-                                                                                       Email = ev.Vendor.Email,
-                                                                                       Description = ev.Vendor.Description,
-                                                                                       Website = ev.Vendor.Website,
-                                                                                       NumOfProducts = ev.Products.Count,
+                                                                                       EventVendorId    = ev.EventVendorId,
+                                                                                       VendorName       = ev.Vendor.Name,
+                                                                                       Email            = ev.Vendor.Email,
+                                                                                       Description      = ev.Vendor.Description,
+                                                                                       Website          = ev.Vendor.Website,
+                                                                                       NumOfProducts    = ev.Products.Count,
                                                                                        Products = _context.Products.Where(pr => pr.EventVendor == theEventVendor)
                                                                                                                    .OrderBy(pr => pr.ProductName)
                                                                                                                    .Select(pr => new ProductMinViewModel { 
-                                                                                                                       ProductId = pr.ProductId,
-                                                                                                                       ProductName = pr.ProductName
+                                                                                                                       ProductId    = pr.ProductId,
+                                                                                                                       ProductName  = pr.ProductName
                                                                                                                    })
                                                                                                                    .ToList()
                                                                                    }).FirstOrDefault();

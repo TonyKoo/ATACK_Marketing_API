@@ -37,5 +37,22 @@ namespace ATACK_Marketing_API.Controllers
 
             return Ok(new { Message = $"Hiiiii {userEmail}! - This is Same Same But Different (SECURE)" });
         }
+
+        /// <summary>
+        /// Test Endpoint To Check For Email Verification With Firebase
+        /// </summary>
+        /// <response code="200">Email and Verification Status</response>
+        [HttpGet]
+        [Authorize]
+        [Route("secure/emailverified")]
+        public IActionResult VerifiedEmailStatus() {
+            var currentUser = HttpContext.User;
+            string userEmail = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            var emailVerified = HttpContext.User.Claims.ElementAt(8).Value;
+
+            return Ok(new { Email = userEmail,
+                            EmailVerified = emailVerified 
+            });
+        }
     }
 }
