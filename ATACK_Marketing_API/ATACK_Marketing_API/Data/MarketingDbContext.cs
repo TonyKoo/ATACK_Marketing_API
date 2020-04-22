@@ -14,6 +14,7 @@ namespace ATACK_Marketing_API.Data {
         public DbSet<Vendor> Vendors{ get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Venue> Venues { get; set; }
+        public DbSet<UserAudit> UserAudit { get; set; }
 
         public DbSet<EventOrganizer> EventOrganizers { get; set; }
         public DbSet<EventVendor> EventVendors { get; set; }

@@ -65,23 +65,28 @@ namespace ATACK_Marketing_API.Controllers
         [Produces("application/json")]
         [HttpPost("create")]
         public IActionResult CreateUserAccount() {
-            if (!Validate.VerifiedUser(HttpContext.User)) {
+            var currentUser = HttpContext.User;
+            string userEmail = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+            if (!Validate.VerifiedUser(currentUser)) {
                 return StatusCode(403, new { Message = "Unverified User" });
             }
 
-            //Check if User Exists
-            User theUser = Retrieve.User(HttpContext.User, _context);
-
+            //Check For Duplicate Email First
+            User theUser = _context.Users.FirstOrDefault(u => u.Email.ToLower() == userEmail.ToLower());
             if (theUser != null) {
-                return BadRequest(new { Message = "User Already Exists" });
+                return BadRequest(new { Message = "Email Address Already Exists" });
+            }
+
+            //Check if Uid Already Exists
+            theUser = Retrieve.User(currentUser, _context);
+            if (theUser != null) {
+                return BadRequest(new { Message = "User (Uid) Already Exists" });
             }
 
             //Add User
             UserRepository userRepo = new UserRepository(_context);
-
-            var currentUser = HttpContext.User;
-            string userEmail = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
             if (!userRepo.CreateUser(uid, userEmail)) {
                 return StatusCode(500, new { Message = "DB Error" });
@@ -92,6 +97,115 @@ namespace ATACK_Marketing_API.Controllers
                                       Email = userEmail,
                                       IsAdmin = false
                                   });
+        }
+
+        /// <response code="400">User Already Has Permissions / Cannot Modify Your Own Account</response>
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
+        /// <response code="404">Cannot Find Users Account</response>   
+        [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
+        [SwaggerOperation(
+            Summary = "Grants Admin Rights To A Specified User",
+            Description = "Requires Authentication"
+        )]
+        [Produces("application/json")]
+        [HttpPut("elevate")]
+        public IActionResult ElevateUser([FromBody] UserAdminInputViewModel emailToElevate) {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify Requesting User Valid and Has Admin Rights
+            User requestingUser = Retrieve.User(HttpContext.User, _context);
+
+            if (requestingUser == null) {
+                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+            } else if (!requestingUser.IsAdmin) {
+                return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
+            }
+
+
+            //Verify User Is Not Themselves
+            String trimmedEmail = emailToElevate.UserEmailToModify.Trim();
+
+            if (requestingUser.Email.ToLower() == trimmedEmail.ToLower()) {
+                return BadRequest(new { Message = "You Cannot Modify Your Own Account" });
+            }
+
+            //Verify User To Elevate Exists
+            User userToElevate = _context.Users.FirstOrDefault(u => u.Email == emailToElevate.UserEmailToModify);
+
+            if (userToElevate == null) {
+                return NotFound(new { Message = "Target User Not Found In DB" });
+            } else if (userToElevate.IsAdmin) {
+                return BadRequest(new { Message = "User Is Already Admin" });
+            }
+
+            UserRepository userRepo = new UserRepository(_context);
+
+            //Perform Elevation
+            if (!userRepo.ElevateAdminUser(requestingUser, userToElevate)) {
+                return StatusCode(500, new { Message = "User DB Error" });
+            }
+
+            return Ok(new UserViewModel {
+                Email = userToElevate.Email,
+                IsAdmin = userToElevate.IsAdmin
+            });
+        }
+
+        /// <response code="400">Insufficient Permissions To Modify Users</response>
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
+        /// <response code="404">Cannot Find Users Account</response>   
+        [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
+        [SwaggerOperation(
+            Summary = "Removes Admin Rights From A Specified User",
+            Description = "Requires Authentication"
+        )]
+        [Produces("application/json")]
+        [HttpPut("demote")]
+        public IActionResult DemoteUser([FromBody] UserAdminInputViewModel emailToDemote) {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify Requesting User Valid and Has Admin Rights
+            User requestingUser = Retrieve.User(HttpContext.User, _context);
+
+            if (requestingUser == null) {
+                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+            } else if (!requestingUser.IsAdmin) {
+                return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
+            }
+
+            //Verify User Is Not Themselves
+            String trimmedEmail = emailToDemote.UserEmailToModify.Trim();
+
+            if (requestingUser.Email.ToLower() == trimmedEmail.ToLower()) {
+                return BadRequest(new { Message = "You Cannot Modify Your Own Account" });
+            }
+
+            //Verify User To Elevate Exists
+            User userToElevate = _context.Users.FirstOrDefault(u => u.Email == emailToDemote.UserEmailToModify);
+
+            if (userToElevate == null) {
+                return NotFound(new { Message = "Target User Not Found In DB" });
+            } else if (!userToElevate.IsAdmin) {
+                return BadRequest(new { Message = "Target User Has No Admin Rights" });
+            }
+
+            UserRepository userRepo = new UserRepository(_context);
+
+            //Perform Elevation
+            if (!userRepo.DemoteAdminUser(requestingUser, userToElevate)) {
+                return StatusCode(500, new { Message = "User DB Error" });
+            }
+
+            return Ok(new UserViewModel {
+                Email = userToElevate.Email,
+                IsAdmin = userToElevate.IsAdmin
+            });
         }
 
         /// <response code="401">Missing Authentication Token</response>

@@ -4,14 +4,16 @@ using ATACK_Marketing_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ATACK_Marketing_API.Migrations
 {
     [DbContext(typeof(MarketingDbContext))]
-    partial class MarketingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200422045833_UserAudit")]
+    partial class UserAudit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -214,25 +216,13 @@ namespace ATACK_Marketing_API.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("EventDateTime")
+                    b.Property<DateTime>("AuditDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("GrantPermission")
+                    b.Property<bool>("Elevate")
                         .HasColumnType("bit");
 
-                    b.Property<string>("GranterEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GranterUid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ModifiedEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ModifiedUid")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PermissionType")
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserAuditId");

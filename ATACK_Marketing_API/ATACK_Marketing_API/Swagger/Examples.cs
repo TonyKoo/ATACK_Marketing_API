@@ -69,7 +69,8 @@ namespace ATACK_Marketing_API.Swagger {
             }
         }
 
-        //User Examples
+        // ========== User Examples ==========
+        // ========== Responses ==========
         public class UserViewModelExample : IExamplesProvider<UserViewModel> {
             public UserViewModel GetExamples() {
                 return new UserViewModel {
@@ -139,6 +140,15 @@ namespace ATACK_Marketing_API.Swagger {
                             }
                         }
                     }
+                };
+            }
+        }
+
+        // ========== Inputs ==========
+        public class UserAdminInputViewModelExample : IExamplesProvider<UserAdminInputViewModel> {
+            public UserAdminInputViewModel GetExamples() {
+                return new UserAdminInputViewModel {
+                    UserEmailToModify = "@"
                 };
             }
         }
