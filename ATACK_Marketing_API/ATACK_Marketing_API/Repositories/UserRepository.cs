@@ -33,5 +33,61 @@ namespace ATACK_Marketing_API.Repositories {
             return isSuccessful;
 
         }
+
+        public bool ElevateAdminUser(User requestingUser, User targetUser) {
+            bool isSuccessful = false;
+
+            try {
+                //Audit
+                UserAudit userAudit = new UserAudit {
+                    EventDateTime = DateTime.Now,
+                    GranterUid = requestingUser.Uid,
+                    GranterEmail = requestingUser.Email,
+                    GrantPermission = true,
+                    PermissionType = "Admin Rights",
+                    ModifiedUid = targetUser.Uid,
+                    ModifiedEmail = targetUser.Email
+                };
+                _context.UserAudit.Add(userAudit);
+
+                //Elevate
+                targetUser.IsAdmin = true;
+                _context.SaveChanges();
+                isSuccessful = true;
+            } catch (Exception) {
+                //Do Nothing
+            }
+
+            return isSuccessful;
+
+        }
+
+        public bool DemoteAdminUser(User requestingUser, User targetUser) {
+            bool isSuccessful = false;
+
+            try {
+                //Audit
+                UserAudit userAudit = new UserAudit {
+                    EventDateTime = DateTime.Now,
+                    GranterUid = requestingUser.Uid,
+                    GranterEmail = requestingUser.Email,
+                    GrantPermission = false,
+                    PermissionType = "Admin Rights",
+                    ModifiedUid = targetUser.Uid,
+                    ModifiedEmail = targetUser.Email
+                };
+                _context.UserAudit.Add(userAudit);
+
+                //Demote
+                targetUser.IsAdmin = false;
+                _context.SaveChanges();
+                isSuccessful = true;
+            } catch (Exception) {
+                //Do Nothing
+            }
+
+            return isSuccessful;
+
+        }
     }
 }

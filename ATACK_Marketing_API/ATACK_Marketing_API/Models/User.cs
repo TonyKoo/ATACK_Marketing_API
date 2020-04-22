@@ -13,7 +13,5 @@ namespace ATACK_Marketing_API.Models {
         public String Email { get; set; }
         [Required]
         public String Uid { get; set; }
-        //[Required]
-        //public virtual Role Role { get; set; }
     }
 }

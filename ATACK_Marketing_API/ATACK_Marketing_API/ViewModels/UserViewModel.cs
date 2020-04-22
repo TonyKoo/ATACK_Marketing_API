@@ -13,4 +13,9 @@ namespace ATACK_Marketing_API.ViewModels {
     public class UpdateUserAdminViewModel {
         public bool IsAdmin { get; set; }
     }
+
+    public class UserAdminInputViewModel {
+        [Required]
+        public String UserEmailToModify { get; set; }
+    }
 }
