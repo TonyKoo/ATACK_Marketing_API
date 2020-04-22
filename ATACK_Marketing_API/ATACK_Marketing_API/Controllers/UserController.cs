@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using ATACK_Marketing_API.Data;
 using ATACK_Marketing_API.Models;
 using ATACK_Marketing_API.Repositories;
+using ATACK_Marketing_API.Utilities;
 using ATACK_Marketing_API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ATACK_Marketing_API.Controllers
 {
@@ -24,22 +26,25 @@ namespace ATACK_Marketing_API.Controllers
         }
 
         /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Cannot Find Users Account</response>   
-        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Get the user account from the database",
-        //    Description = "Requires Authentication"
-        //)]
+        [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
+        [SwaggerOperation(
+            Summary = "Gets the user account from the database",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpGet(Name = "getuser")]
         public IActionResult GetUserAccount() {
-            var currentUser = HttpContext.User;
-            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
 
-            User theUser = _context.Users.FirstOrDefault(u => u.Uid == uid);
+            //Verify User Valid
+            User theUser = Retrieve.User(HttpContext.User, _context);
 
             if (theUser == null) {
-                return NotFound(new { Message = "User Not Found" });
+                return NotFound(new { Message = "User Not Found In DB" });
             }
 
             return Ok(new UserViewModel {
@@ -50,31 +55,36 @@ namespace ATACK_Marketing_API.Controllers
 
         /// <response code="400">User Already Exists</response>
         /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
         /// <response code="500">Database/Server Error</response>   
-        //[SwaggerResponse(201, "Users Account Created Successfully", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Creates a new user account in the database",
-        //    Description = "Requires Authentication"
-        //)]
+        [SwaggerResponse(200, "User Account Created Successfully", typeof(UserViewModel))]
+        [SwaggerOperation(
+            Summary = "Creates the user account in the database",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpPost("create")]
         public IActionResult CreateUserAccount() {
-            var currentUser = HttpContext.User;
-            string userEmail = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-
-            UserRepository userRepo = new UserRepository(_context);
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
 
             //Check if User Exists
-            User theUser = _context.Users.FirstOrDefault(u => u.Uid == uid);
+            User theUser = Retrieve.User(HttpContext.User, _context);
 
             if (theUser != null) {
                 return BadRequest(new { Message = "User Already Exists" });
             }
 
             //Add User
+            UserRepository userRepo = new UserRepository(_context);
+
+            var currentUser = HttpContext.User;
+            string userEmail = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
             if (!userRepo.CreateUser(uid, userEmail)) {
-                return StatusCode(500);
+                return StatusCode(500, new { Message = "DB Error" });
             }
 
             return CreatedAtRoute("getuser",
@@ -85,22 +95,25 @@ namespace ATACK_Marketing_API.Controllers
         }
 
         /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Cannot Find Users Account</response>   
-        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Get the user account from the database",
-        //    Description = "Requires Authentication"
-        //)]
+        [SwaggerResponse(200, "List Of Events User Has Joined", typeof(UserEventListViewModel))]
+        [SwaggerOperation(
+            Summary = "Gets Events User Has Joined",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpGet("eventlist")]
         public IActionResult GetUsersEvents() {
-            var currentUser = HttpContext.User;
-            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
 
-            User theUser = _context.Users.FirstOrDefault(u => u.Uid == uid);
+            //Verify User Valid
+            User theUser = Retrieve.User(HttpContext.User, _context);
 
             if (theUser == null) {
-                return NotFound(new { Message = "User Not Found" });
+                return NotFound(new { Message = "User Not Found In DB" });
             }
 
             EventGuestRepository eventGuestRepo = new EventGuestRepository(_context);
@@ -109,22 +122,25 @@ namespace ATACK_Marketing_API.Controllers
         }
 
         /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Cannot Find Users Account</response>   
-        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Get the user account from the database",
-        //    Description = "Requires Authentication"
-        //)]
+        [SwaggerResponse(200, "List Of Users Event Subscriptions", typeof(EventSubscriptionSummaryViewModel))]
+        [SwaggerOperation(
+            Summary = "Gets Vendors User Has Subscribed To",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpGet("subscriptionlist")]
         public IActionResult GetUsersSubscriptions() {
-            var currentUser = HttpContext.User;
-            string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
 
-            User theUser = _context.Users.FirstOrDefault(u => u.Uid == uid);
+            //Verify User Valid
+            User theUser = Retrieve.User(HttpContext.User, _context);
 
             if (theUser == null) {
-                return NotFound(new { Message = "User Not Found" });
+                return NotFound(new { Message = "User Not Found In DB" });
             }
 
             EventGuestSubscriptionRepository eventGuestSubRepo = new EventGuestSubscriptionRepository(_context);
