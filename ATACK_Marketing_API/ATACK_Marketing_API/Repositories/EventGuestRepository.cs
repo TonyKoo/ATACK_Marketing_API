@@ -15,11 +15,13 @@ namespace ATACK_Marketing_API.Repositories {
         }
 
         public UserEventListViewModel GetUsersEvents(User theUser) {
-            ICollection<UserEventListEventDetailViewModel> eventsJoined = _context.EventGuests.Where(eg => eg.User == theUser).Select(eg => new UserEventListEventDetailViewModel {
-                EventId = eg.Event.EventId,
-                EventName = eg.Event.EventName,
-                EventStartDateTime = eg.Event.EventDateTime
-            }).ToList();
+            ICollection<UserEventListEventDetailViewModel> eventsJoined = _context.EventGuests
+                                                                                  .Where(eg => eg.User == theUser)
+                                                                                  .Select(eg => new UserEventListEventDetailViewModel {
+                                                                                      EventId = eg.Event.EventId,
+                                                                                      EventName = eg.Event.EventName,
+                                                                                      EventStartDateTime = eg.Event.EventDateTime
+                                                                                  }).ToList();
 
             return new UserEventListViewModel {
                 UserEmail = theUser.Email,
@@ -50,6 +52,11 @@ namespace ATACK_Marketing_API.Repositories {
             bool isSuccessful = false;
 
             try {
+                //Remove All Subscriptions First
+                _context.EventGuestSubscriptions.RemoveRange(_context.EventGuestSubscriptions
+                                                                     .Where(egs => egs.EventGuest == theEventJoined));
+
+                //Unjoin Event
                 _context.EventGuests.Remove(theEventJoined);
                 _context.SaveChanges();
                 isSuccessful = true;

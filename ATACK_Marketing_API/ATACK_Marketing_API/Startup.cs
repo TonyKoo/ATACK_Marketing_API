@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using ATACK_Marketing_API.Data;
+using ATACK_Marketing_API.Swagger;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,6 +47,7 @@ namespace ATACK_Marketing_API {
                     });
             });
 
+            services.AddSwaggerExamplesFromAssemblyOf<Examples>();
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("v1", new OpenApiInfo {
                     Version = "v1",
@@ -81,7 +83,7 @@ namespace ATACK_Marketing_API {
                     }
                 });
 
-                //c.ExampleFilters();
+                c.ExampleFilters();
 
                 c.EnableAnnotations();
 

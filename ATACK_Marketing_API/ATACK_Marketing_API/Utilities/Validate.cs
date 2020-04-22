@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace ATACK_Marketing_API.Utilities {
     public static class Validate {
-        public static bool ValidUser(ClaimsPrincipal user, MarketingDbContext context) {
+        public static bool VerifiedUser(ClaimsPrincipal userClaims) {
             bool isValidUser = false;
-            string uid = user.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            User theUser = context.Users.FirstOrDefault(u => u.Uid == uid);
 
-            if (theUser != null) {
+            var emailVerified = userClaims.Claims.ElementAt(8).Value;
+
+            if (emailVerified == "true") {
                 isValidUser = true;
             }
 

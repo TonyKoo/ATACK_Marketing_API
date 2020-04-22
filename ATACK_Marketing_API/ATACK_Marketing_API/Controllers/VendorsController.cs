@@ -11,6 +11,7 @@ using ATACK_Marketing_API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ATACK_Marketing_API.Controllers
 {
@@ -25,19 +26,20 @@ namespace ATACK_Marketing_API.Controllers
         }
 
 
+        /// <response code="400">User Not Registered In DB</response>  
         /// <response code="401">Missing Authentication Token</response>
-        /// <response code="400">User Not Registered In DB</response>   
+        /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Event Not Found</response>   
-        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Get the user account from the database",
-        //    Description = "Requires Authentication"
-        //)]
+        [SwaggerResponse(200, "Event Vendors", typeof(EventVendorsViewModel))]
+        [SwaggerOperation(
+            Summary = "Gets List Of Vendors For An Event",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpGet(Name = "getvendors")]
         public IActionResult GetEventVendors(int eventId) {
-            if (!Validate.ValidUser(HttpContext.User, _context)) {
-                return BadRequest(new { Message = "Unknown User" });
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
             }
 
             Event theEvent = _context.Events.FirstOrDefault(e => e.EventId == eventId);
@@ -51,19 +53,20 @@ namespace ATACK_Marketing_API.Controllers
             return Ok(vendorsRepo.GetAllEventVendors(theEvent));
         }
 
-        /// <response code="401">Missing Authentication Token</response>
         /// <response code="400">User Not Registered In DB</response>   
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Event or Event Vendor Not Found</response>   
-        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Get the user account from the database",
-        //    Description = "Requires Authentication"
-        //)]
+        [SwaggerResponse(200, "Vendor Detail and Product List", typeof(EventVendorViewModel))]
+        [SwaggerOperation(
+            Summary = "Gets Vendor Details and Product List",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpGet("{eventVendorId}", Name = "getvendor")]
         public IActionResult GetEventVendor(int eventId, int eventVendorId) {
-            if (!Validate.ValidUser(HttpContext.User, _context)) {
-                return BadRequest(new { Message = "Unknown User" });
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
             }
 
             Event theEvent = _context.Events.FirstOrDefault(e => e.EventId == eventId);
@@ -83,23 +86,30 @@ namespace ATACK_Marketing_API.Controllers
             return Ok(vendorsRepo.GetEventVendor(theEvent, theEventVendor));
         }
 
-        /// <response code="401">Missing Authentication Token</response>
         /// <response code="400">User Not Registered In DB</response>   
-        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Get the user account from the database",
-        //    Description = "Requires Authentication"
-        //)]
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
+        [SwaggerResponse(200, "Subscribed Vendor Information", typeof(EventSubscriptionViewModel))]
+        [SwaggerOperation(
+            Summary = "Subscribe An Event Guest To An Event Vendor",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpPost("{eventVendorId}/subscribe")]
         public IActionResult SubscribeToEventVendor(int eventId, int eventVendorId) {
-            if (!Validate.ValidUser(HttpContext.User, _context)) {
-                return BadRequest(new { Message = "Unknown User" });
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify User Valid
+            User theUser = Retrieve.User(HttpContext.User, _context);
+
+            if (theUser == null) {
+                return NotFound(new { Message = "User Not Found In DB" });
             }
 
             //Verify Event Exists
             EventsRepository eventsRepo = new EventsRepository(_context);
-
             Event theEvent = eventsRepo.GetEvent(eventId);
 
             if (theEvent == null) {
@@ -116,10 +126,6 @@ namespace ATACK_Marketing_API.Controllers
 
             //Check User Joined Event
             EventGuestRepository eventGuestRepo = new EventGuestRepository(_context);
-
-            string uid = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            User theUser = _context.Users.FirstOrDefault(u => u.Uid == uid);
-
             EventGuest theEventGuest = _context.EventGuests.FirstOrDefault(eg => eg.Event == theEvent && eg.User == theUser);
 
             if (theEventGuest == null) {
@@ -128,7 +134,6 @@ namespace ATACK_Marketing_API.Controllers
 
             //Subscribe User
             EventGuestSubscriptionRepository eventGuestSubRepo = new EventGuestSubscriptionRepository(_context);
-
             EventGuestSubscription theEventGuestSub = _context.EventGuestSubscriptions
                                                               .FirstOrDefault(egs => egs.EventVendor == theEventVendor &&
                                                                                      egs.EventGuest == theEventGuest);
@@ -150,23 +155,30 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="401">Missing Authentication Token</response>
         /// <response code="400">User Not Registered In DB</response>   
-        //[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Get the user account from the database",
-        //    Description = "Requires Authentication"
-        //)]
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
+        [SwaggerResponse(200, "Unsubscribed Vendor Information", typeof(EventSubscriptionViewModel))]
+        [SwaggerOperation(
+            Summary = "Unsubscribe An Event Guest From An Event Vendor",
+            Description = "Requires Authentication"
+        )]
         [Produces("application/json")]
         [HttpPost("{eventVendorId}/unsubscribe")]
         public IActionResult UnsubscribeToEventVendor(int eventId, int eventVendorId) {
-            if (!Validate.ValidUser(HttpContext.User, _context)) {
-                return BadRequest(new { Message = "Unknown User" });
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify User Valid
+            User theUser = Retrieve.User(HttpContext.User, _context);
+
+            if (theUser == null) {
+                return NotFound(new { Message = "User Not Found In DB" });
             }
 
             //Verify Event Exists
             EventsRepository eventsRepo = new EventsRepository(_context);
-
             Event theEvent = eventsRepo.GetEvent(eventId);
 
             if (theEvent == null) {
@@ -183,10 +195,6 @@ namespace ATACK_Marketing_API.Controllers
 
             //Check User Joined Event
             EventGuestRepository eventGuestRepo = new EventGuestRepository(_context);
-
-            string uid = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-            User theUser = _context.Users.FirstOrDefault(u => u.Uid == uid);
-
             EventGuest theEventGuest = _context.EventGuests.FirstOrDefault(eg => eg.Event == theEvent && eg.User == theUser);
 
             if (theEventGuest == null) {
@@ -195,7 +203,6 @@ namespace ATACK_Marketing_API.Controllers
 
             //Unsubscribe User
             EventGuestSubscriptionRepository eventGuestSubRepo = new EventGuestSubscriptionRepository(_context);
-
             EventGuestSubscription theEventGuestSub = _context.EventGuestSubscriptions
                                                                        .FirstOrDefault(egs => egs.EventVendor == theEventVendor &&
                                                                                               egs.EventGuest == theEventGuest);
