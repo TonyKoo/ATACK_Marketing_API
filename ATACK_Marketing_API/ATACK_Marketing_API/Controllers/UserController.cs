@@ -103,10 +103,11 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
         /// <response code="404">Cannot Find Users Account</response>   
+        /// <response code="500">Database/Server Error</response>  
         [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
         [SwaggerOperation(
             Summary = "Grants Admin Rights To A Specified User",
-            Description = "Requires Authentication"
+            Description = "Requires Authentication + Admin Privileges"
         )]
         [Produces("application/json")]
         [HttpPut("elevate")]
@@ -158,10 +159,11 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
         /// <response code="404">Cannot Find Users Account</response>   
+        /// <response code="500">Database/Server Error</response>  
         [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
         [SwaggerOperation(
             Summary = "Removes Admin Rights From A Specified User",
-            Description = "Requires Authentication"
+            Description = "Requires Authentication + Admin Privileges"
         )]
         [Produces("application/json")]
         [HttpPut("demote")]

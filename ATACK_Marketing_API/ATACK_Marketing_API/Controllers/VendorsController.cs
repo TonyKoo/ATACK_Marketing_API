@@ -26,7 +26,6 @@ namespace ATACK_Marketing_API.Controllers
         }
 
 
-        /// <response code="400">User Not Registered In DB</response>  
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Event Not Found</response>   
@@ -52,8 +51,7 @@ namespace ATACK_Marketing_API.Controllers
 
             return Ok(vendorsRepo.GetAllEventVendors(theEvent));
         }
-
-        /// <response code="400">User Not Registered In DB</response>   
+ 
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Event or Event Vendor Not Found</response>   
@@ -86,9 +84,11 @@ namespace ATACK_Marketing_API.Controllers
             return Ok(vendorsRepo.GetEventVendor(theEvent, theEventVendor));
         }
 
-        /// <response code="400">User Not Registered In DB</response>   
+        /// <response code="400">User Not A Guest Of Event / Already Subscribed</response>   
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
+        /// <response code="404">Cannot Find User / Event / Event Vendor</response>
+        /// <response code="500">Database/Server Error</response>  
         [SwaggerResponse(200, "Subscribed Vendor Information", typeof(EventSubscriptionViewModel))]
         [SwaggerOperation(
             Summary = "Subscribe An Event Guest To An Event Vendor",
@@ -155,9 +155,11 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">User Not Registered In DB</response>   
+        /// <response code="400">User Not A Guest Of Event / Already Subscribed</response>   
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
+        /// <response code="404">Cannot Find User / Event / Event Vendor</response>
+        /// <response code="500">Database/Server Error</response>  
         [SwaggerResponse(200, "Unsubscribed Vendor Information", typeof(EventSubscriptionViewModel))]
         [SwaggerOperation(
             Summary = "Unsubscribe An Event Guest From An Event Vendor",

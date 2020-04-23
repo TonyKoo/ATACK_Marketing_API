@@ -79,6 +79,7 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="400">User Not Registered In DB</response>   
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
+        /// <response code="500">Database Error</response>   
         [SwaggerResponse(200, "Joined Event Information", typeof(EventGuestViewModel))]
         [SwaggerOperation(
             Summary = "Join User To An Event",
@@ -130,6 +131,7 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="400">User Not Registered In DB</response>   
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
+        /// <response code="500">Database Error</response>   
         [SwaggerResponse(200, "Event Information", typeof(EventGuestViewModel))]
         [SwaggerOperation(
             Summary = "Remove User From Event",
@@ -177,5 +179,33 @@ namespace ATACK_Marketing_API.Controllers
                 Joined = false
             });
         }
+
+        ///// <response code="400">User Already Has Permissions / Cannot Modify Your Own Account</response>
+        ///// <response code="401">Missing Authentication Token</response>
+        ///// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
+        ///// <response code="404">Cannot Find Users Account</response>   
+        ////[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
+        ////[SwaggerOperation(
+        ////    Summary = "Grants Admin Rights To A Specified User",
+        ////    Description = "Requires Authentication"
+        ////)]
+        //[Produces("application/json")]
+        //[HttpPost]
+        //public IActionResult AddEvent([FromBody] EventAddViewModel eventToAdd) {
+        //    if (!Validate.VerifiedUser(HttpContext.User)) {
+        //        return StatusCode(403, new { Message = "Unverified User" });
+        //    }
+
+        //    //Verify Requesting User Valid and Has Admin Rights
+        //    User requestingUser = Retrieve.User(HttpContext.User, _context);
+
+        //    if (requestingUser == null) {
+        //        return NotFound(new { Message = "Rquesting User Not Found In DB" });
+        //    } else if (!requestingUser.IsAdmin) {
+        //        return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
+        //    }
+
+        //    return Ok("getevent");
+        //}
     }
 }
