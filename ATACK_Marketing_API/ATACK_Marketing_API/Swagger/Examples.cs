@@ -223,5 +223,85 @@ namespace ATACK_Marketing_API.Swagger {
                 };
             }
         }
+
+        //Event Organizer Examples
+        //========== Input ==========
+        public class EventOrganizerViewModelExample : IExamplesProvider<EventOrganizerInputViewModel> {
+            public EventOrganizerInputViewModel GetExamples() {
+                return new EventOrganizerInputViewModel {
+                    EventId = 1,
+                    UserEmailToModify = "@"
+                };
+            }
+        }
+
+        //========== Results ==========
+
+        public class EventOrganizerResultViewModelExample : IExamplesProvider<EventOrganizerResultViewModel> {
+            public EventOrganizerResultViewModel GetExamples() {
+                return new EventOrganizerResultViewModel {
+                    EventId = 1,
+                    EventName = "I Know I Know",
+                    UserEmailToModify = "Albert@rocks.com",
+                    GrantedAccess = true
+                };
+            }
+        }
+
+        public class EventOrganizerListViewModelExample : IExamplesProvider<EventOrganizerListViewModel> {
+            public EventOrganizerListViewModel GetExamples() {
+                return new EventOrganizerListViewModel {
+                    EventId = 1,
+                    EventName = "I Know I Know",
+                    EventStartDateTime = new DateTime(2020, 03, 22, 17, 30, 00),
+                    VenueName = "Rogers Arena",
+                    EventOrganizers = new List<EventOrganizerDetailViewModel> {
+                        new EventOrganizerDetailViewModel {
+                            EventOrganizerId = 5,
+                            UserId = 42,
+                            UserEmail = "Athena@amazing.com"
+                        },
+                        new EventOrganizerDetailViewModel {
+                            EventOrganizerId = 7,
+                            UserId = 21,
+                            UserEmail = "Crystal@github-rules.com"
+                        },
+                    }
+                };
+            }
+        }
+
+        public class UserEventOrganizerViewModelExample : IExamplesProvider<UserEventOrganizerViewModel> {
+            public UserEventOrganizerViewModel GetExamples() {
+                return new UserEventOrganizerViewModel {
+                    UserId = 5,
+                    UserEmail = "Ahmed@camel.com",
+                    EventsOrganizing = new List<EventDetailViewModel> {
+                        new EventDetailViewModel {
+                            EventId = 1,
+                            EventName = "I Know I Know",
+                            EventStartDateTime = new DateTime(2020, 03, 22, 17, 30, 00),
+                            NumOfVendors = 5,
+                            Venue = new Venue {
+                                VenueId = 1,
+                                VenueName = "Rogers Arena",
+                                Website = "https://rogersarena.com/"
+                            }
+                        },
+                        new EventDetailViewModel {
+                            EventId = 2,
+                            EventName = "Same Same But Different",
+                            EventStartDateTime = new DateTime(2020, 07, 11, 12, 00, 00),
+                            NumOfVendors = 5,
+                            Venue = new Venue {
+                                VenueId = 2,
+                                VenueName = "Vancouver Convention Centre",
+                                Website = "https://www.vancouverconventioncentre.com/"
+                            }
+                        }
+                    }
+                };
+            }
+        }
     }
 }
