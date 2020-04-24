@@ -107,7 +107,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
         [SwaggerOperation(
             Summary = "Grants Admin Rights To A Specified User",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Admin Privileges**<br>" +
+                          "**Audited Function**<br>"
         )]
         [Produces("application/json")]
         [HttpPut("elevate")]
@@ -163,7 +165,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
         [SwaggerOperation(
             Summary = "Removes Admin Rights From A Specified User",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Admin Privileges**<br>" +
+                          "**Audited Function**<br>"
         )]
         [Produces("application/json")]
         [HttpPut("demote")]

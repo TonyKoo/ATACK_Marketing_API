@@ -14,6 +14,98 @@ namespace ATACK_Marketing_API.Repositories {
             _context = context;
         }
 
+        public ICollection<VendorManagementViewModel> GetAllVendors() {
+            return _context.Vendors.OrderBy(v => v.Name)
+                                   .Select(v => new VendorManagementViewModel {
+                                        VendorId = v.VendorId,
+                                        Name = v.Name
+                                    }).ToList();
+        }
+
+        public Vendor GetVendor(int vendorId) {
+            return _context.Vendors.FirstOrDefault(v => v.VendorId == vendorId);
+        }
+
+        public (bool, Vendor) AddVendor(User requestingUser, VendorAddModifyViewModel theVendor) {
+            bool isSuccessful = false;
+            Vendor newVendor = new Vendor {
+                Name = theVendor.Name,
+                Description = theVendor.Description,
+                Email = theVendor.Email,
+                Website = theVendor.Website
+            };
+
+            try {
+                _context.Vendors.Add(newVendor);
+                _context.SaveChanges(); //Needed to Generate Vendor ID
+
+                _context.VendorAudit.Add(new VendorAudit {
+                    EventDateTime = DateTime.Now,
+                    UserUid = requestingUser.Uid,
+                    UserEmail = requestingUser.Email,
+                    Operation = $"Add Vendor",
+                    Detail = $"Vendor ID: {newVendor.VendorId} - {newVendor.Name}"
+                });
+                _context.SaveChanges();
+
+                isSuccessful = true;
+            } catch (Exception) {
+                //Do Nothing
+            }
+
+            return (isSuccessful, newVendor);
+        }
+
+        public (bool, Vendor) UpdateVendor(User requestingUser, Vendor theVendor, VendorAddModifyViewModel updatedVendor) {
+            bool isSuccessful = false;
+
+            try {
+                _context.VendorAudit.Add(new VendorAudit {
+                    EventDateTime = DateTime.Now,
+                    UserUid = requestingUser.Uid,
+                    UserEmail = requestingUser.Email,
+                    Operation = $"Update Vendor",
+                    Detail = $"Vendor ID: {theVendor.VendorId} - {theVendor.Name}"
+                });
+
+                theVendor.Name = updatedVendor.Name;
+                theVendor.Description = updatedVendor.Description;
+                theVendor.Email = updatedVendor.Email;
+                theVendor.Website = updatedVendor.Website;
+
+                _context.Vendors.Update(theVendor);
+                _context.SaveChanges();
+
+                isSuccessful = true;
+            } catch (Exception) {
+                //Do Nothing
+            }
+
+            return (isSuccessful, theVendor);
+        }
+
+        public bool DeleteVendor(User requestingUser, Vendor vendorToDelete) {
+            bool isSuccessful = false;
+
+            try {
+                _context.VendorAudit.Add(new VendorAudit {
+                    EventDateTime = DateTime.Now,
+                    UserUid = requestingUser.Uid,
+                    UserEmail = requestingUser.Email,
+                    Operation = $"Delete Vendor",
+                    Detail = $"Vendor ID: {vendorToDelete.VendorId} - {vendorToDelete.Name}"
+                });
+
+                _context.Vendors.Remove(vendorToDelete);
+                _context.SaveChanges();
+                isSuccessful = true;
+            } catch (Exception) {
+                //Do Nothing
+            }
+
+            return isSuccessful;
+        }
+
         public EventVendorsViewModel GetAllEventVendors(Event theEvent) {
             ICollection<EventVendorMinDetailViewModel> vendors = _context.EventVendors.Where(ev => ev.Event == theEvent)
                                                                                    .OrderBy(ev => ev.Vendor.Name)

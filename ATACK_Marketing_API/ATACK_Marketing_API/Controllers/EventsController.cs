@@ -135,7 +135,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Event Information", typeof(EventGuestViewModel))]
         [SwaggerOperation(
             Summary = "Remove User From Event",
-            Description = "Requires Authentication - NOTE: This Will Automatically Unsubscribe User From Any Vendors They Subscribed To At The Event"
+            Description = "Requires Authentication<br>" +
+                          "**NOTE:** This Will Automatically Unsubscribe User From Any Vendors They Subscribed To At The Event"
         )]
         [Produces("application/json")]
         [HttpPost("{eventId}/leave")]

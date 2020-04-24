@@ -303,5 +303,46 @@ namespace ATACK_Marketing_API.Swagger {
                 };
             }
         }
+
+        // Vendor Management
+        public class VendorAddModifyViewModelExample : IExamplesProvider<VendorAddModifyViewModel> {
+            public VendorAddModifyViewModel GetExamples() {
+                return new VendorAddModifyViewModel {
+                    Name = "7-11 Canada",
+                    Description = "At 7-Eleven Canada, we never close. We pride ourselves on being your neighbourhood go-to store - 24/7/365.",
+                    Email = "ask.slurpee.eh@7-11.com",
+                    Website = "https://7-eleven.ca/"
+                };
+            }
+        }
+
+        public class VendorExample : IExamplesProvider<Vendor> {
+            public Vendor GetExamples() {
+                return new Vendor {
+                    VendorId = 1,
+                    Name = "7-11 Canada",
+                    Description = "At 7-Eleven Canada, we never close. We pride ourselves on being your neighbourhood go-to store - 24/7/365.",
+                    Email = "ask.slurpee.eh@7-11.com",
+                    Website = "https://7-eleven.ca/"
+                };
+            }
+        }
+
+        public class VendorManagementViewModelExample : IExamplesProvider<VendorManagementViewModel> {
+            public VendorManagementViewModel GetExamples() {
+                return new VendorManagementViewModel {
+                    VendorId = 1,
+                    Name = "7-11 Canada"
+                };
+            }
+        }
+        
+        public class VendorDeleteViewModelExample : IExamplesProvider<VendorDeleteViewModel> {
+            public VendorDeleteViewModel GetExamples() {
+                return new VendorDeleteViewModel {
+                    ConfirmDeleteName = "ConfirmDELETE - <Vendor Name>"
+                };
+            }
+        }
     }
 }

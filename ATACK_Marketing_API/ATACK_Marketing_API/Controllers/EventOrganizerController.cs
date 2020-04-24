@@ -58,7 +58,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "List of Event Organizers For The Event", typeof(EventOrganizerListViewModel))]
         [SwaggerOperation(
             Summary = "Gets Event Organizers For An Event",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Admin Privileges**<br>"
         )]
         [Produces("application/json")]
         [HttpGet("{eventId}", Name = "geteventorganizer")]
@@ -98,7 +99,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(201, "Added Event Organizer And Event Information", typeof(EventOrganizerResultViewModel))]
         [SwaggerOperation(
             Summary = "Adds A User To Manage Vendors For An Event (Event Organizer)",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Admin Privileges**<br>" +
+                          "**Audited Function**<br>"
         )]
         [Produces("application/json")]
         [HttpPost]
@@ -161,7 +164,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Removed Event Organizer And Event Information", typeof(EventOrganizerResultViewModel))]
         [SwaggerOperation(
             Summary = "Removes A User From Managing Vendors For An Event (Event Organizer)",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Admin Privileges**<br>" +
+                          "**Audited Function**<br>"
         )]
         [Produces("application/json")]
         [HttpDelete]

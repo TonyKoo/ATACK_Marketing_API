@@ -23,4 +23,5 @@ namespace ATACK_Marketing_API.ViewModels {
         public DateTime EventStartDateTime { get; set; }
         public Venue Venue { get; set; }
     }
+
 }
