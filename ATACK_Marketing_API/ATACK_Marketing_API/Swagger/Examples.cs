@@ -459,7 +459,28 @@ namespace ATACK_Marketing_API.Swagger {
                     GrantedAccess = false
                 };
             }
-        }     
+        }
 
+        //Reports
+        public class VendorSubscriberReportViewModelExample : IExamplesProvider<VendorSubscriberReportViewModel> {
+            public VendorSubscriberReportViewModel GetExamples() {
+                return new VendorSubscriberReportViewModel {
+                    EventId = 1,
+                    EventName = "I Know I Know",
+                    EventStartDateTime = new DateTime(2020, 03, 22, 17, 30, 00),
+                    EventVendorId = 1,
+                    VendorName = "Tong Enterprises",
+                    Subscribers = new List<VendorSubscriberDetailViewModel> {
+                        new VendorSubscriberDetailViewModel {
+                            UserEmail = "Ahmed@camel.com"
+                        },
+                        new VendorSubscriberDetailViewModel {
+                            UserEmail = "Tony@tiger.com"
+                        }
+                    }
+
+                };
+            }
+        }   
     }
 }

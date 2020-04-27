@@ -3,11 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using ATACK_Marketing_API.Data;
+using ATACK_Marketing_API.Models;
+using ATACK_Marketing_API.Repositories;
+using ATACK_Marketing_API.Utilities;
+using ATACK_Marketing_API.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace ATACK_Marketing_API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ReportsController : ControllerBase {
@@ -21,15 +28,15 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified/Insufficient Permissions</response>
         /// <response code="404">Cannot Find Users Account / Product Not Found</response>   
-        //[SwaggerResponse(200, "Event Product Information", typeof(ProductRetrieveViewModel))]
-        //[SwaggerOperation(
-        //    Summary = "Gets An Event Vendor's Product",
-        //    Description = "Requires Authentication<br>" +
-        //                  "**Privileges:** Admin, Vendor"
-        //)]
+        [SwaggerResponse(200, "Subscription Report", typeof(VendorSubscriberReportViewModel))]
+        [SwaggerOperation(
+            Summary = "Generates A List Of All Event Guests Subscribed To Vendor",
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin, Vendor"
+        )]
         [Produces("application/json")]
-        [HttpGet("{eventVendorId}/products/{productId}", Name = "geteventproduct")]
-        public IActionResult GetProduct(int eventVendorId, int productId) {
+        [HttpGet("subscribers/{eventVendorId}")]
+        public IActionResult GetSubscriberReport(int eventVendorId) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });
             }
@@ -57,23 +64,10 @@ namespace ATACK_Marketing_API.Controllers
                 }
             }
 
-            //Get The Product
-            ProductsRepository productsRepo = new ProductsRepository(_context);
-            Product theProduct = productsRepo.GetEventProduct(productId);
+            //Get The Report
+            ReportsRepository reportsRepo = new ReportsRepository(_context);
 
-            if (theProduct == null) {
-                return NotFound(new { Message = "No Product Found With That ID" });
-            }
-
-            return Ok(new ProductRetrieveViewModel {
-                ProductId = theProduct.ProductId,
-                ProductName = theProduct.ProductName,
-                ProductDetails = theProduct.ProductDetails,
-                EventId = eventVendor.Event.EventId,
-                EventName = eventVendor.Event.EventName,
-                EventVendorId = eventVendor.EventVendorId,
-                EventVendorName = eventVendor.Vendor.Name
-            });
+            return Ok(reportsRepo.GetEventSubscribers(eventVendor));
         }
     }
 }
