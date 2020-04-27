@@ -10,6 +10,26 @@ namespace ATACK_Marketing_API.Swagger {
     public class Examples {
 
         //Events Examples
+
+        //========= Input =========
+        public class EventAddModifyViewModelExample : IExamplesProvider<EventAddModifyViewModel> {
+            public EventAddModifyViewModel GetExamples() {
+                return new EventAddModifyViewModel {
+                    EventName = "Dogz and Catz",
+                    EventStartDateTime = new DateTime(2020, 08, 22, 19, 30, 00),
+                    VenueId = 1
+                };
+            }
+        }
+
+        public class EventDeleteInputViewModelExample : IExamplesProvider<EventDeleteInputViewModel> {
+            public EventDeleteInputViewModel GetExamples() {
+                return new EventDeleteInputViewModel {
+                    DeleteConfirmation = "ConfirmDELETE - <Event Name>"
+                };
+            }
+        }
+
         public class EventsViewModelExample : IExamplesProvider<EventsViewModel> {
             public EventsViewModel GetExamples() {
                 return new EventsViewModel {
@@ -303,5 +323,143 @@ namespace ATACK_Marketing_API.Swagger {
                 };
             }
         }
+
+        // Vendor Management
+        public class VendorAddModifyViewModelExample : IExamplesProvider<VendorAddModifyViewModel> {
+            public VendorAddModifyViewModel GetExamples() {
+                return new VendorAddModifyViewModel {
+                    Name = "7-11 Canada",
+                    Description = "At 7-Eleven Canada, we never close. We pride ourselves on being your neighbourhood go-to store - 24/7/365.",
+                    Email = "ask.slurpee.eh@7-11.com",
+                    Website = "https://7-eleven.ca/"
+                };
+            }
+        }
+
+        public class VendorExample : IExamplesProvider<Vendor> {
+            public Vendor GetExamples() {
+                return new Vendor {
+                    VendorId = 1,
+                    Name = "7-11 Canada",
+                    Description = "At 7-Eleven Canada, we never close. We pride ourselves on being your neighbourhood go-to store - 24/7/365.",
+                    Email = "ask.slurpee.eh@7-11.com",
+                    Website = "https://7-eleven.ca/"
+                };
+            }
+        }
+
+        public class VendorManagementViewModelExample : IExamplesProvider<VendorManagementViewModel> {
+            public VendorManagementViewModel GetExamples() {
+                return new VendorManagementViewModel {
+                    VendorId = 1,
+                    Name = "7-11 Canada"
+                };
+            }
+        }
+        
+        public class VendorDeleteViewModelExample : IExamplesProvider<VendorDeleteViewModel> {
+            public VendorDeleteViewModel GetExamples() {
+                return new VendorDeleteViewModel {
+                    ConfirmDeleteName = "ConfirmDELETE - <Vendor Name>"
+                };
+            }
+        }
+
+        //Event Vendor 
+        public class EventVendorAddRemoveViewModelExample : IExamplesProvider<EventVendorAddRemoveViewModel> {
+            public EventVendorAddRemoveViewModel GetExamples() {
+                return new EventVendorAddRemoveViewModel {
+                    EventId = 1,
+                    VendorId = 1
+                };
+            }
+        }
+
+        public class ProductInputViewModelExample : IExamplesProvider<ProductInputViewModel> {
+            public ProductInputViewModel GetExamples() {
+                return new ProductInputViewModel {
+                    ProductName = "Apple Pie",
+                    ProductDetails = "Just like how grandma used to make!"
+                };
+            }
+        }
+
+
+        // ========= Result =========
+        public class EventVendorResultViewModelExample : IExamplesProvider<EventVendorResultViewModel> {
+            public EventVendorResultViewModel GetExamples() {
+                return new EventVendorResultViewModel {
+                    EventVendorId = 1,
+                    EventId = 1,
+                    EventName = "I Know I Know",
+                    EventStartDateTime = new DateTime(2020, 03, 22, 17, 30, 00),
+                    VendorId = 2,
+                    VendorName = "Amazon",
+                    IsEventVendor = true
+                };
+            }
+        }
+
+        public class ProductRetrieveViewModelExample : IExamplesProvider<ProductRetrieveViewModel> {
+            public ProductRetrieveViewModel GetExamples() {
+                return new ProductRetrieveViewModel {
+                    ProductId = 21,
+                    ProductName = "Slurpee",
+                    ProductDetails = "A delicious frozen carbonated drink",
+                    EventId = 1,
+                    EventName = "I Know I Know",
+                    EventVendorId = 7,
+                    EventVendorName = "7-11 Canada"
+                };
+            }
+        }
+
+        
+
+        //Event Vendor User
+        public class EventVendorUserManagedViewModelExample : IExamplesProvider<EventVendorUserManagedViewModel> {
+            public EventVendorUserManagedViewModel GetExamples() {
+                return new EventVendorUserManagedViewModel {
+                    UserEmail = "Athena@rocks.com",
+                    UserEventVendors = new List<EventVendorUserManagedDetailViewModel> {
+                        new EventVendorUserManagedDetailViewModel {
+                            EventVendorId = 1,
+                            EventId = 1,
+                            EventName = "I Know I Know",
+                            VendorId = 5,
+                            VendorName = "Tong Enterprises"
+                        },
+                        new EventVendorUserManagedDetailViewModel {
+                            EventVendorId = 5,
+                            EventId = 2,
+                            EventName = "Catz & Dogz",
+                            VendorId = 10,
+                            VendorName = "Petcetera"
+                        }
+                    }
+                };
+            }
+        }
+
+        public class EventVendorUserInputViewModelExample : IExamplesProvider<EventVendorUserInputViewModel> {
+            public EventVendorUserInputViewModel GetExamples() {
+                return new EventVendorUserInputViewModel {
+                    EventVendorId = 1,
+                    UserEmailToModify = "@"
+                };
+            }
+        }
+
+        public class EventVendorUserResultViewModelExample : IExamplesProvider<EventVendorUserResultViewModel> {
+            public EventVendorUserResultViewModel GetExamples() {
+                return new EventVendorUserResultViewModel {
+                    EventName = "I Know I Know",
+                    UserEmailToModify = "Crystal@catz.com",
+                    EventVendorId = 12,
+                    GrantedAccess = false
+                };
+            }
+        }     
+
     }
 }

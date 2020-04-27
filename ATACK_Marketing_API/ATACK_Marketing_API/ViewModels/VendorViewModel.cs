@@ -37,6 +37,11 @@ namespace ATACK_Marketing_API.ViewModels {
         public ICollection<ProductMinViewModel> Products { get; set; }
     }
 
+    public class VendorManagementViewModel {
+        public int VendorId { get; set; }
+        public String Name { get; set; }
+    }
+
     public class VendorAddModifyViewModel {
         [Required]
         public String Name { get; set; }
@@ -46,5 +51,8 @@ namespace ATACK_Marketing_API.ViewModels {
         public String Website { get; set; }
     }
 
-
+    public class VendorDeleteViewModel {
+        [Required]
+        public String ConfirmDeleteName { get; set; }
+    }
 }

@@ -4,14 +4,16 @@ using ATACK_Marketing_API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ATACK_Marketing_API.Migrations
 {
     [DbContext(typeof(MarketingDbContext))]
-    partial class MarketingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200424042704_VendorAudit")]
+    partial class VendorAudit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -280,11 +282,8 @@ namespace ATACK_Marketing_API.Migrations
                     b.Property<string>("Operation")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserUid")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("UserAuditId")
+                        .HasColumnType("int");
 
                     b.HasKey("VendorAuditId");
 

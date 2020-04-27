@@ -58,7 +58,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "List of Event Organizers For The Event", typeof(EventOrganizerListViewModel))]
         [SwaggerOperation(
             Summary = "Gets Event Organizers For An Event",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin"
         )]
         [Produces("application/json")]
         [HttpGet("{eventId}", Name = "geteventorganizer")]
@@ -98,7 +99,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(201, "Added Event Organizer And Event Information", typeof(EventOrganizerResultViewModel))]
         [SwaggerOperation(
             Summary = "Adds A User To Manage Vendors For An Event (Event Organizer)",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**"
         )]
         [Produces("application/json")]
         [HttpPost]
@@ -111,7 +114,7 @@ namespace ATACK_Marketing_API.Controllers
             User requestingUser = Retrieve.User(HttpContext.User, _context);
 
             if (requestingUser == null) {
-                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
             } else if (!requestingUser.IsAdmin) {
                 return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
             }
@@ -161,7 +164,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Removed Event Organizer And Event Information", typeof(EventOrganizerResultViewModel))]
         [SwaggerOperation(
             Summary = "Removes A User From Managing Vendors For An Event (Event Organizer)",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**"
         )]
         [Produces("application/json")]
         [HttpDelete]
@@ -174,7 +179,7 @@ namespace ATACK_Marketing_API.Controllers
             User requestingUser = Retrieve.User(HttpContext.User, _context);
 
             if (requestingUser == null) {
-                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
             } else if (!requestingUser.IsAdmin) {
                 return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
             }

@@ -35,7 +35,7 @@ namespace ATACK_Marketing_API.Controllers
             Description = "Requires Authentication"
         )]
         [Produces("application/json")]
-        [HttpGet(Name = "getvendors")]
+        [HttpGet]
         public IActionResult GetEventVendors(int eventId) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });
@@ -61,7 +61,7 @@ namespace ATACK_Marketing_API.Controllers
             Description = "Requires Authentication"
         )]
         [Produces("application/json")]
-        [HttpGet("{eventVendorId}", Name = "getvendor")]
+        [HttpGet("{eventVendorId}")]
         public IActionResult GetEventVendor(int eventId, int eventVendorId) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });

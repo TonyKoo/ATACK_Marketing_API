@@ -135,7 +135,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Event Information", typeof(EventGuestViewModel))]
         [SwaggerOperation(
             Summary = "Remove User From Event",
-            Description = "Requires Authentication - NOTE: This Will Automatically Unsubscribe User From Any Vendors They Subscribed To At The Event"
+            Description = "Requires Authentication<br>" +
+                          "**NOTE:** This Will Automatically Unsubscribe User From Any Vendors They Subscribed To At The Event"
         )]
         [Produces("application/json")]
         [HttpPost("{eventId}/leave")]
@@ -180,32 +181,171 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        ///// <response code="400">User Already Has Permissions / Cannot Modify Your Own Account</response>
-        ///// <response code="401">Missing Authentication Token</response>
-        ///// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
-        ///// <response code="404">Cannot Find Users Account</response>   
-        ////[SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
-        ////[SwaggerOperation(
-        ////    Summary = "Grants Admin Rights To A Specified User",
-        ////    Description = "Requires Authentication"
-        ////)]
-        //[Produces("application/json")]
-        //[HttpPost]
-        //public IActionResult AddEvent([FromBody] EventAddViewModel eventToAdd) {
-        //    if (!Validate.VerifiedUser(HttpContext.User)) {
-        //        return StatusCode(403, new { Message = "Unverified User" });
-        //    }
+        /// <response code="400">Invalid Venue</response>
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
+        /// <response code="404">Cannot Find Users Account</response>   
+        /// <response code="500">Database/Server Error</response>  
+        [SwaggerResponse(201, "Added Event Information", typeof(EventDetailViewModel))]
+        [SwaggerOperation(
+            Summary = "Adds An Event",
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**"
+        )]
+        [Produces("application/json")]
+        [HttpPost("add")]
+        public IActionResult AddEvent([FromBody] EventAddModifyViewModel eventToAdd) {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
 
-        //    //Verify Requesting User Valid and Has Admin Rights
-        //    User requestingUser = Retrieve.User(HttpContext.User, _context);
+            //Verify Requesting User Valid and Has Admin Rights
+            User requestingUser = Retrieve.User(HttpContext.User, _context);
 
-        //    if (requestingUser == null) {
-        //        return NotFound(new { Message = "Rquesting User Not Found In DB" });
-        //    } else if (!requestingUser.IsAdmin) {
-        //        return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
-        //    }
+            if (requestingUser == null) {
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
+            } else if (!requestingUser.IsAdmin) {
+                return StatusCode(403, new { Message = "Insufficient Permissions To Add Events (Admin)" });
+            }
 
-        //    return Ok("getevent");
-        //}
+            //Verify Venue Is Valid
+            Venue theVenue = _context.Venues.FirstOrDefault(v => v.VenueId == eventToAdd.VenueId);
+
+            if (theVenue == null) {
+                return BadRequest(new { Message = "Invalid Venue Specified" });
+            }
+
+            EventsRepository eventRepo = new EventsRepository(_context);
+
+            (bool isSuccessful, Event newEvent) = eventRepo.AddEvent(requestingUser, eventToAdd, theVenue);
+            if (!isSuccessful) {
+                return StatusCode(500, new { Message = "Add Event Error (DB Issue)" });
+            }
+
+            return StatusCode(201, new EventDetailViewModel { 
+                EventId = newEvent.EventId,
+                EventName = newEvent.EventName,
+                EventStartDateTime = newEvent.EventDateTime,
+                NumOfVendors = 0,
+                Venue = newEvent.Venue
+            });
+        }
+
+        /// <response code="400">Invalid Venue</response>
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
+        /// <response code="404">Cannot Find Users Account OR Event</response>   
+        /// <response code="500">Database/Server Error</response>  
+        [SwaggerResponse(200, "Updated Event Information", typeof(EventDetailViewModel))]
+        [SwaggerOperation(
+            Summary = "Updates An Event",
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**"
+        )]
+        [Produces("application/json")]
+        [HttpPut("update/{eventId}")]
+        public IActionResult UpdateEvent(int eventId, [FromBody] EventAddModifyViewModel eventToUpdate) {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify Requesting User Valid and Has Admin Rights
+            User requestingUser = Retrieve.User(HttpContext.User, _context);
+
+            if (requestingUser == null) {
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
+            } else if (!requestingUser.IsAdmin) {
+                return StatusCode(403, new { Message = "Insufficient Permissions To Add Events (Admin)" });
+            }
+
+            //Verify Event Exists
+            EventsRepository eventRepo = new EventsRepository(_context);
+            Event theEvent = eventRepo.GetEvent(eventId);
+
+            if (theEvent == null) {
+                return NotFound(new { Message = "Event Not Found" });
+            }
+
+            //Verify Venue Is Valid (If Changed)
+            Venue theVenue = theEvent.Venue;
+            if (theVenue.VenueId != eventToUpdate.VenueId) {
+                theVenue = _context.Venues.FirstOrDefault(v => v.VenueId == eventToUpdate.VenueId);
+
+                if (theVenue == null) {
+                    return BadRequest(new { Message = "Invalid Venue Specified" });
+                }
+            } 
+
+            //Update Event
+            if (!eventRepo.UpdateEvent(requestingUser, theEvent, eventToUpdate, theVenue)) {
+                return StatusCode(500, new { Message = "Update Event Error (DB Issue)" });
+            }
+
+            return Ok(new EventDetailViewModel {
+                EventId = theEvent.EventId,
+                EventName = theEvent.EventName,
+                EventStartDateTime = theEvent.EventDateTime,
+                NumOfVendors = theEvent.EventVendors.Count,
+                Venue = theEvent.Venue
+            });
+        }
+
+        /// <response code="400">User Already Has Permissions</response>
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
+        /// <response code="404">Cannot Find Users Account OR Event</response>   
+        /// <response code="500">Database/Server Error</response>  
+        [SwaggerResponse(200, "Removed Event Information", typeof(EventDetailViewModel))]
+        [SwaggerOperation(
+            Summary = "Removes An Event",
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**<br>" +
+                          "**Note:** You Cannot Remove An Event Once Guests Subscribe To Event Vendors" 
+        )]
+        [Produces("application/json")]
+        [HttpDelete("remove/{eventId}")]
+        public IActionResult RemoveEvent(int eventId, [FromBody] EventDeleteInputViewModel deleteConfirm) {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify Requesting User Valid and Has Admin Rights
+            User requestingUser = Retrieve.User(HttpContext.User, _context);
+
+            if (requestingUser == null) {
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
+            } else if (!requestingUser.IsAdmin) {
+                return StatusCode(403, new { Message = "Insufficient Permissions To Add Events (Admin)" });
+            }
+
+            //Verify Event Exists
+            EventsRepository eventRepo = new EventsRepository(_context);
+            Event theEvent = eventRepo.GetEvent(eventId);
+
+            if (theEvent == null) {
+                return NotFound(new { Message = "Event Not Found" });
+            }
+
+            //Verify Confirm Delete
+            if (!(deleteConfirm.DeleteConfirmation == $"ConfirmDELETE - {theEvent.EventName}")) {
+                return BadRequest(new { Message = "Event Delete String Invalid" });
+            }
+
+            //Remove Event
+            if (!eventRepo.RemoveEvent(requestingUser, theEvent)) {
+                return StatusCode(500, new { Message = "Remove Event Error (DB Issue)" });
+            }
+
+            return Ok(new EventDetailViewModel {
+                EventId = theEvent.EventId,
+                EventName = theEvent.EventName,
+                EventStartDateTime = theEvent.EventDateTime,
+                NumOfVendors = 0,
+                Venue = theEvent.Venue
+            });
+        }
     }
 }

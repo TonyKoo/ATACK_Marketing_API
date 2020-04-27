@@ -9,12 +9,13 @@ namespace ATACK_Marketing_API.Data {
     public class MarketingDbContext : DbContext {
 
         public DbSet<User> Users { get; set; }
-        //public DbSet<Role> Roles { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<Vendor> Vendors{ get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Venue> Venues { get; set; }
         public DbSet<UserAudit> UserAudit { get; set; }
+        public DbSet<VendorAudit> VendorAudit { get; set; }
+
 
         public DbSet<EventOrganizer> EventOrganizers { get; set; }
         public DbSet<EventVendor> EventVendors { get; set; }

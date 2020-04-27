@@ -69,9 +69,9 @@ namespace ATACK_Marketing_API.Controllers
             string userEmail = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
             string uid = currentUser.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
 
-            if (!Validate.VerifiedUser(currentUser)) {
-                return StatusCode(403, new { Message = "Unverified User" });
-            }
+            //if (!Validate.VerifiedUser(currentUser)) {
+            //    return StatusCode(403, new { Message = "Unverified User" });
+            //}
 
             //Check For Duplicate Email First
             User theUser = _context.Users.FirstOrDefault(u => u.Email.ToLower() == userEmail.ToLower());
@@ -107,7 +107,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
         [SwaggerOperation(
             Summary = "Grants Admin Rights To A Specified User",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**<br>"
         )]
         [Produces("application/json")]
         [HttpPut("elevate")]
@@ -120,7 +122,7 @@ namespace ATACK_Marketing_API.Controllers
             User requestingUser = Retrieve.User(HttpContext.User, _context);
 
             if (requestingUser == null) {
-                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
             } else if (!requestingUser.IsAdmin) {
                 return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
             }
@@ -163,7 +165,9 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
         [SwaggerOperation(
             Summary = "Removes Admin Rights From A Specified User",
-            Description = "Requires Authentication + Admin Privileges"
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**<br>"
         )]
         [Produces("application/json")]
         [HttpPut("demote")]
@@ -176,7 +180,7 @@ namespace ATACK_Marketing_API.Controllers
             User requestingUser = Retrieve.User(HttpContext.User, _context);
 
             if (requestingUser == null) {
-                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
             } else if (!requestingUser.IsAdmin) {
                 return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
             }
