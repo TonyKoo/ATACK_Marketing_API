@@ -30,7 +30,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "List Of Vendors", typeof(VendorManagementViewModel))]
         [SwaggerOperation(
             Summary = "Gets List Of All Vendors In DB",
-            Description = "Requires Authentication"
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin, Event Organizer"
         )]
         [Produces("application/json")]
         [HttpGet(Name = "getvendors")]
@@ -46,6 +47,15 @@ namespace ATACK_Marketing_API.Controllers
                 return NotFound(new { Message = "User Not Found In DB" });
             }
 
+            //Permission Check
+            if (!theUser.IsAdmin) {
+                EventOrganizer eventOrganizer = _context.EventOrganizers.FirstOrDefault(eo => eo.User == theUser);
+
+                if(eventOrganizer == null) {
+                    return StatusCode(403, new { Message = "Insufficient Permissions (Admin or Event Organizer)" });
+                }
+            }
+
             VendorsRepository vendorRepo = new VendorsRepository(_context);
 
             return Ok(vendorRepo.GetAllVendors());
@@ -57,7 +67,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerResponse(200, "The Vendor", typeof(Vendor))]
         [SwaggerOperation(
             Summary = "Retrieve A Vendor From The Database",
-            Description = "Requires Authentication"
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin, Event Organizer"
         )]
         [Produces("application/json")]
         [HttpGet("{vendorId}")]
@@ -71,6 +82,15 @@ namespace ATACK_Marketing_API.Controllers
 
             if (theUser == null) {
                 return NotFound(new { Message = "User Not Found In DB" });
+            }
+
+            //Permission Check
+            if (!theUser.IsAdmin) {
+                EventOrganizer eventOrganizer = _context.EventOrganizers.FirstOrDefault(eo => eo.User == theUser);
+
+                if (eventOrganizer == null) {
+                    return StatusCode(403, new { Message = "Insufficient Permissions (Admin or Event Organizer)" });
+                }
             }
 
             //Check If Vendor Valid
@@ -100,7 +120,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerOperation(
             Summary = "Adds A Vendor To The Database",
             Description = "Requires Authentication<br>" +
-                          "**Audited Function**<br>"
+                          "**Privileges:** Admin, Event Organizer<br>" + 
+                          "**Audited Function**" 
         )]
         [Produces("application/json")]
         [HttpPost ("AddVendor")]
@@ -114,6 +135,15 @@ namespace ATACK_Marketing_API.Controllers
 
             if (requestingUser == null) {
                 return NotFound(new { Message = "User Not Found In DB" });
+            }
+
+            //Permission Check
+            if (!requestingUser.IsAdmin) {
+                EventOrganizer eventOrganizer = _context.EventOrganizers.FirstOrDefault(eo => eo.User == requestingUser);
+
+                if (eventOrganizer == null) {
+                    return StatusCode(403, new { Message = "Insufficient Permissions (Admin or Event Organizer)" });
+                }
             }
 
             //Verify Vendor Not Already In DB
@@ -147,7 +177,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerOperation(
             Summary = "Updates An Existing Vendor In The Database",
             Description = "Requires Authentication<br>" +
-                          "**Audited Function**<br>"
+                          "**Privileges:** Admin, Event Organizer<br>" +
+                          "**Audited Function**"
         )]
         [Produces("application/json")]
         [HttpPut ("{vendorId}")]
@@ -168,6 +199,15 @@ namespace ATACK_Marketing_API.Controllers
 
             if (theVendor == null) {
                 return BadRequest(new { Message = $"Vendor Not Found" });
+            }
+
+            //Permission Check
+            if (!requestingUser.IsAdmin) {
+                EventOrganizer eventOrganizer = _context.EventOrganizers.FirstOrDefault(eo => eo.User == requestingUser);
+
+                if (eventOrganizer == null) {
+                    return StatusCode(403, new { Message = "Insufficient Permissions (Admin or Event Organizer)" });
+                }
             }
 
             //Update Vendor
@@ -196,7 +236,7 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerOperation(
             Summary = "Deletes Vendor From Database",
             Description = "Requires Authentication<br>" +
-                          "**Admin Privileges**<br>" +
+                          "**Privileges:** Admin<br>" +
                           "**Audited Function**<br>" + 
                           "**WARNING:** Will Remove Vendor Completely From DB, Even If They Are Attached To An Event"
         )]
@@ -211,9 +251,9 @@ namespace ATACK_Marketing_API.Controllers
             User requestingUser = Retrieve.User(HttpContext.User, _context);
 
             if (requestingUser == null) {
-                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
             } else if (!requestingUser.IsAdmin) {
-                return StatusCode(403, new { Message = "Insufficient Permissions To Delete Vendors" });
+                return StatusCode(403, new { Message = "Insufficient Permissions (Admin)" });
             }
 
             //Check If Vendor Valid

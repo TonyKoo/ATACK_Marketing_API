@@ -68,7 +68,10 @@ namespace ATACK_Marketing_API.Repositories {
                     Detail = $"Vendor ID: {theVendor.VendorId} - {theVendor.Name}"
                 });
 
-                theVendor.Name = updatedVendor.Name;
+                //Only Allow Name Update For Admin
+                if (requestingUser.IsAdmin) {
+                    theVendor.Name = updatedVendor.Name;
+                }
                 theVendor.Description = updatedVendor.Description;
                 theVendor.Email = updatedVendor.Email;
                 theVendor.Website = updatedVendor.Website;
@@ -110,9 +113,9 @@ namespace ATACK_Marketing_API.Repositories {
             ICollection<EventVendorMinDetailViewModel> vendors = _context.EventVendors.Where(ev => ev.Event == theEvent)
                                                                                    .OrderBy(ev => ev.Vendor.Name)
                                                                                    .Select(ev => new EventVendorMinDetailViewModel { 
-                                                                                       EventVendorId = ev.EventVendorId,
-                                                                                       VendorName = ev.Vendor.Name,
-                                                                                       NumOfProducts = ev.Products.Count
+                                                                                       EventVendorId    = ev.EventVendorId,
+                                                                                       VendorName       = ev.Vendor.Name,
+                                                                                       NumOfProducts    = ev.Products.Count
                                                                                    })
                                                                                    .ToList();
 

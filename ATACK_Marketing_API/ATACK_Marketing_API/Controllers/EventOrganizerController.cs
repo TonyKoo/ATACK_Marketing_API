@@ -59,7 +59,7 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerOperation(
             Summary = "Gets Event Organizers For An Event",
             Description = "Requires Authentication<br>" +
-                          "**Admin Privileges**<br>"
+                          "**Privileges:** Admin"
         )]
         [Produces("application/json")]
         [HttpGet("{eventId}", Name = "geteventorganizer")]
@@ -100,8 +100,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerOperation(
             Summary = "Adds A User To Manage Vendors For An Event (Event Organizer)",
             Description = "Requires Authentication<br>" +
-                          "**Admin Privileges**<br>" +
-                          "**Audited Function**<br>"
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**"
         )]
         [Produces("application/json")]
         [HttpPost]
@@ -114,7 +114,7 @@ namespace ATACK_Marketing_API.Controllers
             User requestingUser = Retrieve.User(HttpContext.User, _context);
 
             if (requestingUser == null) {
-                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
             } else if (!requestingUser.IsAdmin) {
                 return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
             }
@@ -165,8 +165,8 @@ namespace ATACK_Marketing_API.Controllers
         [SwaggerOperation(
             Summary = "Removes A User From Managing Vendors For An Event (Event Organizer)",
             Description = "Requires Authentication<br>" +
-                          "**Admin Privileges**<br>" +
-                          "**Audited Function**<br>"
+                          "**Privileges:** Admin<br>" +
+                          "**Audited Function**"
         )]
         [Produces("application/json")]
         [HttpDelete]
@@ -179,7 +179,7 @@ namespace ATACK_Marketing_API.Controllers
             User requestingUser = Retrieve.User(HttpContext.User, _context);
 
             if (requestingUser == null) {
-                return NotFound(new { Message = "Rquesting User Not Found In DB" });
+                return NotFound(new { Message = "Requesting User Not Found In DB" });
             } else if (!requestingUser.IsAdmin) {
                 return StatusCode(403, new { Message = "Insufficient Permissions To Modify Users" });
             }
