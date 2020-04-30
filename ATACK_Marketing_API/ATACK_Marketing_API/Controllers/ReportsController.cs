@@ -35,6 +35,45 @@ namespace ATACK_Marketing_API.Controllers
                           "**Privileges:** Admin, Vendor"
         )]
         [Produces("application/json")]
+        [HttpGet("subscribers")]
+        public IActionResult GetAllSubscribers() {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify User Valid
+            User theUser = Retrieve.User(HttpContext.User, _context);
+
+            if (theUser == null) {
+                return NotFound(new { Message = "User Not Found In DB" });
+            }
+
+            //Permission Check
+            EventVendorUser eventVendorUser = _context.EventVendorUsers.FirstOrDefault(evu => evu.User == theUser);
+
+            if (!theUser.IsAdmin) {
+                if (eventVendorUser == null) {
+                    return StatusCode(403, new { Message = "Insufficient Permissions (Admin or Event Vendor)" });
+                }
+            }
+
+            //Get The Report
+            ReportsRepository reportsRepo = new ReportsRepository(_context);
+
+            return Ok(reportsRepo.GetAllSubscribers(theUser));
+        }
+
+        /// <response code="400">Event Vendor Doesn't Exist</response>
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified/Insufficient Permissions</response>
+        /// <response code="404">Cannot Find Users Account / Product Not Found</response>   
+        [SwaggerResponse(200, "Subscription Report", typeof(VendorSubscriberReportViewModel))]
+        [SwaggerOperation(
+            Summary = "Generates A List Of Event Guests Subscribed To A Particular Event Vendor",
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin, Vendor"
+        )]
+        [Produces("application/json")]
         [HttpGet("subscribers/{eventVendorId}")]
         public IActionResult GetSubscriberReport(int eventVendorId) {
             if (!Validate.VerifiedUser(HttpContext.User)) {

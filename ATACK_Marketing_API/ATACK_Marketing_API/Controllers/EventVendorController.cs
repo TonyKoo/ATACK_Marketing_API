@@ -103,12 +103,12 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">Event Vendor Doesn't Exist</response>
+        /// <response code="400">Event Vendor Doesn't Exist / Event Vendor Has Vendor User's Attached / Delete Confirmation Incorrect</response>
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified/Insufficient Permissions</response>
         /// <response code="404">Cannot Find Users Account</response>   
         /// <response code="500">Database/Server Error</response>  
-        [SwaggerResponse(200, "Vendor and Event Information", typeof(EventVendorResultViewModel))]
+        [SwaggerResponse(200, "Vendor Was Removed")]
         [SwaggerOperation(
             Summary = "Remove Vendor From An Event",
             Description = "Requires Authentication<br>" +
@@ -118,8 +118,8 @@ namespace ATACK_Marketing_API.Controllers
                           "**WARNING:** Vendors Products For Event Will Be Removed"
         )]
         [Produces("application/json")]
-        [HttpPost("remove/{eventVendorId}")]
-        public IActionResult RemoveEventVendor(int eventVendorId) {
+        [HttpDelete("remove/{eventVendorId}")]
+        public IActionResult RemoveEventVendor(int eventVendorId, [FromBody] EventVendorRemoveInputViewModel deleteString) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });
             }
@@ -138,6 +138,18 @@ namespace ATACK_Marketing_API.Controllers
                 return BadRequest(new { Message = "Event Vendor Doesn't Exist" });
             }
 
+            //Delete Confirmation
+            if (deleteString.DeleteVendorString != $"{eventVendor.Event.EventName} - {eventVendor.Vendor.Name}") {
+                return BadRequest(new { Message = "EventVendor Confirm Delete String Invalid" });
+            }
+
+
+            //Vendor User Check
+            EventVendorUserRepository eventVendorUserRepo = new EventVendorUserRepository(_context);
+            if(eventVendorUserRepo.GetEventVendorUsersCount(eventVendorId) > 0) {
+                return BadRequest(new { Message = "Event Vendor Has Vendor Users Attached" });
+            }
+
             //Permission Check
             if (!theUser.IsAdmin) {
                 EventOrganizer eventOrganizer = _context.EventOrganizers.FirstOrDefault(eo => eo.User == theUser && eo.Event == eventVendor.Event);
@@ -147,10 +159,16 @@ namespace ATACK_Marketing_API.Controllers
                 }
             }
 
+            //Subscriber Check
+            EventGuestSubscriptionRepository eventGuestSubscriptionRepo = new EventGuestSubscriptionRepository(_context);
+            if (eventGuestSubscriptionRepo.GetUsersSubscribedVendorCount(eventVendorId) > 0) {
+                return BadRequest(new { Message = "Event Vendor Has User Subscriptions" });
+            }
+
             //Remove The Event Vendor
             EventVendorRepository eventVendorRepo = new EventVendorRepository(_context);
             if (!eventVendorRepo.RemoveEventVendor(theUser, eventVendor)) {
-                return StatusCode(500, new { Message = "EventVendor Add Error (DB Issue)" });
+                return StatusCode(500, new { Message = "EventVendor Remove Error (DB Issue)" });
             }
 
             return Ok();
@@ -168,7 +186,7 @@ namespace ATACK_Marketing_API.Controllers
                           "**Privileges:** Admin, Vendor"
         )]
         [Produces("application/json")]
-        [HttpGet("{eventVendorId}/products/{productId}", Name = "geteventproduct")]
+        [HttpGet("{eventVendorId}/products/{productId}")]
         public IActionResult GetProduct(int eventVendorId, int productId) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });
@@ -208,7 +226,7 @@ namespace ATACK_Marketing_API.Controllers
             return Ok(new ProductRetrieveViewModel {
                 ProductId = theProduct.ProductId,
                 ProductName = theProduct.ProductName,
-                ProductDetails = theProduct.ProductDetails,
+                ProductPrice = theProduct.ProductPrice,
                 EventId = eventVendor.Event.EventId,
                 EventName = eventVendor.Event.EventName,
                 EventVendorId = eventVendor.EventVendorId,
@@ -216,7 +234,7 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">Event Vendor Doesn't Exist</response>
+        /// <response code="400">Event Vendor Doesn't Exist / Product Price Negative</response>
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified/Insufficient Permissions</response>
         /// <response code="404">Cannot Find Users Account</response>   
@@ -239,6 +257,11 @@ namespace ATACK_Marketing_API.Controllers
 
             if (theUser == null) {
                 return NotFound(new { Message = "User Not Found In DB" });
+            }
+
+            //Validate Input
+            if (newProduct.ProductPrice < 0) {
+                return BadRequest(new { Message = "Product Price Cannot Be Negative" });
             }
 
             //Verify Event Vendor Exists
@@ -266,10 +289,10 @@ namespace ATACK_Marketing_API.Controllers
             }
 
 
-            return CreatedAtRoute("geteventproduct", new ProductRetrieveViewModel {
+            return StatusCode(201, new ProductRetrieveViewModel {
                 ProductId = theNewProduct.ProductId,
                 ProductName = theNewProduct.ProductName,
-                ProductDetails = theNewProduct.ProductDetails,
+                ProductPrice = theNewProduct.ProductPrice,
                 EventId = eventVendor.Event.EventId,
                 EventName = eventVendor.Event.EventName,
                 EventVendorId = eventVendor.EventVendorId,
@@ -277,7 +300,7 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">Event Vendor Doesn't Exist</response>
+        /// <response code="400">Event Vendor Doesn't Exist / Product Price Negative</response>
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified/Insufficient Permissions</response>
         /// <response code="404">Cannot Find Users Account</response>   
@@ -300,6 +323,11 @@ namespace ATACK_Marketing_API.Controllers
 
             if (theUser == null) {
                 return NotFound(new { Message = "User Not Found In DB" });
+            }
+
+            //Validate Input
+            if (updatedProduct.ProductPrice < 0) {
+                return BadRequest(new { Message = "Product Price Cannot Be Negative" });
             }
 
             //Verify Event Vendor Exists
@@ -335,7 +363,7 @@ namespace ATACK_Marketing_API.Controllers
             return Ok(new ProductRetrieveViewModel {
                 ProductId = product.ProductId,
                 ProductName = product.ProductName,
-                ProductDetails = product.ProductDetails,
+                ProductPrice = product.ProductPrice,
                 EventId = eventVendor.Event.EventId,
                 EventName = eventVendor.Event.EventName,
                 EventVendorId = eventVendor.EventVendorId,
@@ -396,13 +424,13 @@ namespace ATACK_Marketing_API.Controllers
 
             //Update Product
             if (!productsRepo.RemoveEventProduct(product)) {
-                return StatusCode(500, new { Message = "Product Update Error (DB Issue)" });
+                return StatusCode(500, new { Message = "Product Remove Error (DB Issue)" });
             }
 
             return Ok(new ProductRetrieveViewModel {
                 ProductId = product.ProductId,
                 ProductName = product.ProductName,
-                ProductDetails = product.ProductDetails,
+                ProductPrice = product.ProductPrice,
                 EventId = eventVendor.Event.EventId,
                 EventName = eventVendor.Event.EventName,
                 EventVendorId = eventVendor.EventVendorId,

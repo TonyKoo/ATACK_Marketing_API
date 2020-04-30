@@ -141,7 +141,8 @@ namespace ATACK_Marketing_API.Repositories {
                                                                                                                    .OrderBy(pr => pr.ProductName)
                                                                                                                    .Select(pr => new ProductMinViewModel { 
                                                                                                                        ProductId    = pr.ProductId,
-                                                                                                                       ProductName  = pr.ProductName
+                                                                                                                       ProductName  = pr.ProductName,
+                                                                                                                       ProductPrice = pr.ProductPrice
                                                                                                                    })
                                                                                                                    .ToList()
                                                                                    }).FirstOrDefault();

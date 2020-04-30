@@ -14,6 +14,14 @@ namespace ATACK_Marketing_API.Repositories {
             _context = context;
         }
 
+        public int GetVendorEventCount(int vendorId) {
+            return _context.EventVendors.Where(ev => ev.Vendor.VendorId == vendorId).Count();
+        }
+
+        public int GetVendorsAttchedToEventCount(int eventId) {
+            return _context.EventVendors.Where(ev => ev.Event.EventId == eventId).Count();
+        }
+
         public (bool, EventVendor) AddEventVendor(User requestingUser, Event theEvent, Vendor theVendor) {
             bool isSuccessful = false;
             EventVendor newEventVendor = new EventVendor {

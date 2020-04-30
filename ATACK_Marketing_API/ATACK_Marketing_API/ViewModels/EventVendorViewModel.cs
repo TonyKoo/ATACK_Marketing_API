@@ -21,4 +21,9 @@ namespace ATACK_Marketing_API.ViewModels {
         public int EventVendorId { get; set; }
         public bool IsEventVendor { get; set; }
     }
+
+    public class EventVendorRemoveInputViewModel {
+        [Required]
+        public String DeleteVendorString { get; set; }
+    }
 }

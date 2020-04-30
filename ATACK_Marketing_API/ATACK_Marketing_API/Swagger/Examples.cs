@@ -95,7 +95,9 @@ namespace ATACK_Marketing_API.Swagger {
             public UserViewModel GetExamples() {
                 return new UserViewModel {
                     Email = "Same_Same@Different.com",
-                    IsAdmin = false
+                    IsAdmin = false,
+                    EventsOrganizing = 5,
+                    VendorsManaged = 0
                 };
             }
         }
@@ -219,11 +221,13 @@ namespace ATACK_Marketing_API.Swagger {
                         Products = new List<ProductMinViewModel> {
                             new ProductMinViewModel {
                                 ProductId = 1,
-                                ProductName = "Java For Noobs"
+                                ProductName = "Java For Noobs",
+                                ProductPrice = 54.95m
                             },
                             new ProductMinViewModel {
                                 ProductId = 2,
-                                ProductName = "Opportunities To Earn Marks"
+                                ProductName = "Opportunities To Earn Marks",
+                                ProductPrice = 109.99m
                             }
                         }
                     }
@@ -357,9 +361,9 @@ namespace ATACK_Marketing_API.Swagger {
             }
         }
         
-        public class VendorDeleteViewModelExample : IExamplesProvider<VendorDeleteViewModel> {
-            public VendorDeleteViewModel GetExamples() {
-                return new VendorDeleteViewModel {
+        public class VendorDeleteViewModelExample : IExamplesProvider<VendorInputDeleteViewModel> {
+            public VendorInputDeleteViewModel GetExamples() {
+                return new VendorInputDeleteViewModel {
                     ConfirmDeleteName = "ConfirmDELETE - <Vendor Name>"
                 };
             }
@@ -379,11 +383,18 @@ namespace ATACK_Marketing_API.Swagger {
             public ProductInputViewModel GetExamples() {
                 return new ProductInputViewModel {
                     ProductName = "Apple Pie",
-                    ProductDetails = "Just like how grandma used to make!"
+                    ProductPrice = 7.99m
                 };
             }
         }
 
+        public class EventVendorRemoveInputViewModelExample : IExamplesProvider<EventVendorRemoveInputViewModel> {
+            public EventVendorRemoveInputViewModel GetExamples() {
+                return new EventVendorRemoveInputViewModel {
+                    DeleteVendorString = "<Event Name> - <Vendor Name>"
+                };
+            }
+        }
 
         // ========= Result =========
         public class EventVendorResultViewModelExample : IExamplesProvider<EventVendorResultViewModel> {
@@ -405,7 +416,7 @@ namespace ATACK_Marketing_API.Swagger {
                 return new ProductRetrieveViewModel {
                     ProductId = 21,
                     ProductName = "Slurpee",
-                    ProductDetails = "A delicious frozen carbonated drink",
+                    ProductPrice = 2.99m,
                     EventId = 1,
                     EventName = "I Know I Know",
                     EventVendorId = 7,
@@ -481,6 +492,35 @@ namespace ATACK_Marketing_API.Swagger {
 
                 };
             }
-        }   
+        }
+
+        //Venue
+        public class VenueViewModelExample : IExamplesProvider<VenueViewModel> {
+            public VenueViewModel GetExamples() {
+                return new VenueViewModel {
+                    VenueId = 1, 
+                    VenueName = "Rogers Arena",
+                    Website = "https://rogersarena.com/"
+                };
+            }
+        }
+
+        public class VenueInputViewModelExample : IExamplesProvider<VenueInputViewModel> {
+            public VenueInputViewModel GetExamples() {
+                return new VenueInputViewModel {
+                    VenueName = "Rogers Arena",
+                    Website = "https://rogersarena.com/"
+                };
+            }
+        }
+
+        public class VenueDeleteInputViewModelExample : IExamplesProvider<VenueDeleteInputViewModel> {
+            public VenueDeleteInputViewModel GetExamples() {
+                return new VenueDeleteInputViewModel {
+                    ConfirmDeleteVenue = "ConfirmDELETE - <Venue Name>"
+                };
+            }
+        }
+
     }
 }

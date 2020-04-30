@@ -292,7 +292,7 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">User Already Has Permissions</response>
+        /// <response code="400">User Already Has Permissions / Vendors or Event Organizers Attached To Event</response>
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
         /// <response code="404">Cannot Find Users Account OR Event</response>   
@@ -303,7 +303,7 @@ namespace ATACK_Marketing_API.Controllers
             Description = "Requires Authentication<br>" +
                           "**Privileges:** Admin<br>" +
                           "**Audited Function**<br>" +
-                          "**Note:** You Cannot Remove An Event Once Guests Subscribe To Event Vendors" 
+                          "**Note:** You Cannot Remove An Event Once Event Vendors Are Attached / Users Subscribed" 
         )]
         [Produces("application/json")]
         [HttpDelete("remove/{eventId}")]
@@ -332,6 +332,18 @@ namespace ATACK_Marketing_API.Controllers
             //Verify Confirm Delete
             if (!(deleteConfirm.DeleteConfirmation == $"ConfirmDELETE - {theEvent.EventName}")) {
                 return BadRequest(new { Message = "Event Delete String Invalid" });
+            }
+
+            //Check Event Vendors
+            EventVendorRepository eventVendorRepo = new EventVendorRepository(_context);
+            if (eventVendorRepo.GetVendorsAttchedToEventCount(eventId) > 0) {
+                return BadRequest(new { Message = "Event Has Vendors Attached" });
+            }
+
+            //Check Event Organizer
+            EventOrganizerRepository eventOrganizerRepo = new EventOrganizerRepository(_context);
+            if (eventOrganizerRepo.GetEventOrganizersCount(eventId) > 0) {
+                return BadRequest(new { Message = "Event Has Event Organizers Attached" });
             }
 
             //Remove Event

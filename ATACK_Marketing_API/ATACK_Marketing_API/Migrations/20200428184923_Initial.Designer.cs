@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATACK_Marketing_API.Migrations
 {
     [DbContext(typeof(MarketingDbContext))]
-    [Migration("20200424043313_VendorAuditAsjust")]
-    partial class VendorAuditAsjust
+    [Migration("20200428184923_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -279,13 +279,13 @@ namespace ATACK_Marketing_API.Migrations
                     b.Property<DateTime>("EventDateTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("GranterEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GranterUid")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Operation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserUid")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("VendorAuditId");

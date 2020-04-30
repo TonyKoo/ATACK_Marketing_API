@@ -28,7 +28,7 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Cannot Find Users Account</response>   
-        [SwaggerResponse(200, "Users Email and Admin Privileges", typeof(UserViewModel))]
+        [SwaggerResponse(200, "Users Email, Admin Privileges and Event/Vendor Membership Counts", typeof(UserViewModel))]
         [SwaggerOperation(
             Summary = "Gets the user account from the database",
             Description = "Requires Authentication"
@@ -49,7 +49,9 @@ namespace ATACK_Marketing_API.Controllers
 
             return Ok(new UserViewModel {
                 Email = theUser.Email,
-                IsAdmin = theUser.IsAdmin
+                IsAdmin = theUser.IsAdmin,
+                EventsOrganizing = _context.EventOrganizers.Where(eo => eo.User == theUser).Count(),
+                VendorsManaged = _context.EventVendorUsers.Where(evu => evu.User == theUser).Count()
             });
         }
 
@@ -95,7 +97,9 @@ namespace ATACK_Marketing_API.Controllers
             return CreatedAtRoute("getuser",
                                   new UserViewModel {
                                       Email = userEmail,
-                                      IsAdmin = false
+                                      IsAdmin = false,
+                                      EventsOrganizing = 0,
+                                      VendorsManaged = 0
                                   });
         }
 
@@ -153,7 +157,9 @@ namespace ATACK_Marketing_API.Controllers
 
             return Ok(new UserViewModel {
                 Email = userToElevate.Email,
-                IsAdmin = userToElevate.IsAdmin
+                IsAdmin = userToElevate.IsAdmin,
+                EventsOrganizing = _context.EventOrganizers.Where(eo => eo.User == userToElevate).Count(),
+                VendorsManaged = _context.EventVendorUsers.Where(evu => evu.User == userToElevate).Count()
             });
         }
 
@@ -210,7 +216,9 @@ namespace ATACK_Marketing_API.Controllers
 
             return Ok(new UserViewModel {
                 Email = userToElevate.Email,
-                IsAdmin = userToElevate.IsAdmin
+                IsAdmin = userToElevate.IsAdmin,
+                EventsOrganizing = 0,
+                VendorsManaged = 0
             });
         }
 

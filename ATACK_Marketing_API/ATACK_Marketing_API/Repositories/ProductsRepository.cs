@@ -22,7 +22,7 @@ namespace ATACK_Marketing_API.Repositories {
             bool isSuccessful = false;
             Product product = new Product {
                 ProductName = newProduct.ProductName,
-                ProductDetails = newProduct.ProductDetails,
+                ProductPrice = newProduct.ProductPrice,
                 EventVendor = theEventVendor
             };
 
@@ -42,7 +42,7 @@ namespace ATACK_Marketing_API.Repositories {
 
             try {
                 theProduct.ProductName = updatedProduct.ProductName;
-                theProduct.ProductDetails = updatedProduct.ProductDetails;
+                theProduct.ProductPrice = updatedProduct.ProductPrice;
 
                 _context.Products.Update(theProduct);
                 _context.SaveChanges();

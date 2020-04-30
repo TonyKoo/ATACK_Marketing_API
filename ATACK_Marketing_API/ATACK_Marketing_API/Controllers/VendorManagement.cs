@@ -227,7 +227,7 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">Delete Confirmation String Is Not Correct</response>
+        /// <response code="400">Delete Confirmation String Is Not Correct / Vendor Attached To An Event</response>
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Cannot Find Users Account / Vendor</response>   
@@ -238,11 +238,11 @@ namespace ATACK_Marketing_API.Controllers
             Description = "Requires Authentication<br>" +
                           "**Privileges:** Admin<br>" +
                           "**Audited Function**<br>" + 
-                          "**WARNING:** Will Remove Vendor Completely From DB, Even If They Are Attached To An Event"
+                          "**Note:** You Cannot Remove A Vendor If They Are Attached To An Event"
         )]
         [Produces("application/json")]
         [HttpDelete("{vendorId}")]
-        public IActionResult DeleteVendor(int vendorId, [FromBody] VendorDeleteViewModel deleteConfirm) {
+        public IActionResult DeleteVendor(int vendorId, [FromBody] VendorInputDeleteViewModel deleteConfirm) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });
             }
@@ -263,6 +263,24 @@ namespace ATACK_Marketing_API.Controllers
             if (theVendor == null) {
                 return NotFound(new { Message = "Vendor Not Found" });
             }
+
+            //Check If Attached To Any Events
+            EventVendorRepository eventVendorRepo = new EventVendorRepository(_context);
+            if (eventVendorRepo.GetVendorEventCount(vendorId) > 0) {
+                return BadRequest(new { Message = "Vendor's Attached To Events Cannot Be Removed" });
+            }
+
+            ////Check For Vendor Users
+            //EventVendorUserRepository eventVendorUserRepo = new EventVendorUserRepository(_context);
+            //if (eventVendorUserRepo.GetEventVendorUsersCount(vendorId) > 0) {
+            //    return BadRequest(new { Message = "Vendor Has Users Attached" });
+            //}
+
+            ////Check For Subscribers
+            //EventGuestSubscriptionRepository eventGuestSubscriptionRepo = new EventGuestSubscriptionRepository(_context);
+            //if (eventGuestSubscriptionRepo.GetUsersSubscribedVendorCount(vendorId) > 0) {
+            //    return BadRequest(new { Message = "Vendor Has Users Subscribed" });
+            //}
 
             //Verify Confirm Delete
             if (!(deleteConfirm.ConfirmDeleteName == $"ConfirmDELETE - {theVendor.Name}")) {
