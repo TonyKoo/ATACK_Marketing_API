@@ -14,6 +14,10 @@ namespace ATACK_Marketing_API.Repositories {
             _context = context;
         }
 
+        public int GetUsersSubscribedVendorCount(int eventVendorId) {
+            return _context.EventGuestSubscriptions.Where(evs => evs.EventVendor.EventVendorId == eventVendorId).Count();
+        }
+
         public EventSubscriptionSummaryViewModel GetUsersSubscriptions(User theUser) {
 
             ICollection<EventSubscriptionDetailViewModel> userSubscriptions = _context.EventGuests.Where(eg => eg.User == theUser)

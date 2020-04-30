@@ -53,6 +53,46 @@ namespace ATACK_Marketing_API.Controllers
             return Ok(eventVendorUserRepo.GetEventVendorUserList(theUser));
         }
 
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified</response>
+        /// <response code="404">Cannot Find Users Account</response>   
+        [SwaggerResponse(200, "Event Vendor Users", typeof(EventVendorUserManagedViewModel))]
+        [SwaggerOperation(
+            Summary = "Gets List Of Users Managing The Event Vendor",
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin, Event Organizer"
+        )]
+        [Produces("application/json")]
+        [HttpGet("{eventVendorId}")]
+        public IActionResult GetUserVendorsManaged(int eventVendorId) {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Verify Event Vendor Exists
+            EventVendor eventVendor = _context.EventVendors.FirstOrDefault(ev => ev.EventVendorId == eventVendorId);
+
+            if (eventVendor == null) {
+                return BadRequest(new { Message = "Event Vendor Doesn't Exist" });
+            }
+
+            //Verify Requesting User Valid and Has Rights
+            User requestingUser = Retrieve.User(HttpContext.User, _context);
+            if (!requestingUser.IsAdmin) {
+                EventOrganizer eventOrganizer = _context.EventOrganizers.FirstOrDefault(eo => eo.User == requestingUser &&
+                                                                                              eo.Event.EventId == eventVendor.Event.EventId);
+
+                if (eventOrganizer == null) {
+                    return StatusCode(403, new { Message = "Insufficient Permissions (Admin or Event Organizer)" });
+                }
+            }
+
+            //Retrieve Event Organizers For Event
+            EventVendorUserRepository eventVendorUserRepo = new EventVendorUserRepository(_context);
+
+            return Ok(eventVendorUserRepo.GetEventVendorUsers(eventVendor));
+        }
+
         /// <response code="400">User Already Has Permissions</response>
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
@@ -66,7 +106,7 @@ namespace ATACK_Marketing_API.Controllers
                           "**Audited Function**<br>"
         )]
         [Produces("application/json")]
-        [HttpPost]
+        [HttpPost("add")]
         public IActionResult AddVendorUser([FromBody] EventVendorUserInputViewModel vendorUserToAdd) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });
@@ -132,7 +172,7 @@ namespace ATACK_Marketing_API.Controllers
                           "**Audited Function**<br>"
         )]
         [Produces("application/json")]
-        [HttpDelete]
+        [HttpDelete("remove")]
         public IActionResult RemoveEventVendorUser([FromBody] EventVendorUserInputViewModel vendorUserToRemove) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });

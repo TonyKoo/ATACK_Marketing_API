@@ -31,4 +31,15 @@ namespace ATACK_Marketing_API.ViewModels {
         public int VendorId { get; set; }
         public String VendorName { get; set; }
     }
+
+    public class EventVendorUserListViewModel {
+        public int EventVendorId { get; set; }
+        public int EventId { get; set; }
+        public String EventName { get; set; }
+        public ICollection<EventVendorUserDetailViewModel> VendorUsers { get; set; }
+    }
+
+    public class EventVendorUserDetailViewModel {
+        public String UserEmail { get; set; }
+    }
 }

@@ -35,6 +35,10 @@ namespace ATACK_Marketing_API.Repositories {
             return _context.Events.FirstOrDefault(e => e.EventId == eventId);
         }
 
+        public int GetVenueEventCount(int venueId) {
+            return _context.Events.Where(e => e.Venue.VenueId == venueId).Count();
+        }
+
         public (bool, Event) AddEvent(User requestingUser, EventAddModifyViewModel theNewEvent, Venue theVenue) {
             bool isSuccessful = false;
             Event newEvent = new Event {

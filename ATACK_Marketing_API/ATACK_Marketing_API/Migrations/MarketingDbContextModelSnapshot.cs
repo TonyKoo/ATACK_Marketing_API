@@ -172,11 +172,11 @@ namespace ATACK_Marketing_API.Migrations
                         .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<string>("ProductDetails")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ProductPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ProductId");
 

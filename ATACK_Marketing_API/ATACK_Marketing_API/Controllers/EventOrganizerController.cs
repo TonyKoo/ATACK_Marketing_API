@@ -104,7 +104,7 @@ namespace ATACK_Marketing_API.Controllers
                           "**Audited Function**"
         )]
         [Produces("application/json")]
-        [HttpPost]
+        [HttpPost("add")]
         public IActionResult AddEventOrganizer([FromBody] EventOrganizerInputViewModel eventOrganizerToAdd) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });
@@ -169,7 +169,7 @@ namespace ATACK_Marketing_API.Controllers
                           "**Audited Function**"
         )]
         [Produces("application/json")]
-        [HttpDelete]
+        [HttpDelete("remove")]
         public IActionResult RemoveEventOrganizer([FromBody] EventOrganizerInputViewModel eventOrganizerToRemove) {
             if (!Validate.VerifiedUser(HttpContext.User)) {
                 return StatusCode(403, new { Message = "Unverified User" });

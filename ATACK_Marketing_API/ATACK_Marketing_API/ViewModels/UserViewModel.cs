@@ -8,6 +8,8 @@ namespace ATACK_Marketing_API.ViewModels {
     public class UserViewModel {
         public String Email { get; set; }
         public bool IsAdmin { get; set; }
+        public int EventsOrganizing { get; set; }
+        public int VendorsManaged { get; set; }
     }
 
     public class UpdateUserAdminViewModel {

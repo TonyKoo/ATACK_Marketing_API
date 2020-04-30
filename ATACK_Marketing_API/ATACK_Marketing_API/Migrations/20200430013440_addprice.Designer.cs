@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATACK_Marketing_API.Migrations
 {
     [DbContext(typeof(MarketingDbContext))]
-    [Migration("20200422051941_UserAuditAdjust")]
-    partial class UserAuditAdjust
+    [Migration("20200430013440_addprice")]
+    partial class addprice
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -174,11 +174,11 @@ namespace ATACK_Marketing_API.Migrations
                         .IsRequired()
                         .HasColumnType("int");
 
-                    b.Property<string>("ProductDetails")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProductName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("ProductPrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("ProductId");
 
@@ -264,6 +264,33 @@ namespace ATACK_Marketing_API.Migrations
                     b.HasKey("VendorId");
 
                     b.ToTable("Vendors");
+                });
+
+            modelBuilder.Entity("ATACK_Marketing_API.Models.VendorAudit", b =>
+                {
+                    b.Property<int>("VendorAuditId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Detail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("EventDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Operation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserUid")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("VendorAuditId");
+
+                    b.ToTable("VendorAudit");
                 });
 
             modelBuilder.Entity("ATACK_Marketing_API.Models.Venue", b =>

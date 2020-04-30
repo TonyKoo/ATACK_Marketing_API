@@ -14,6 +14,10 @@ namespace ATACK_Marketing_API.Repositories {
             _context = context;
         }
 
+        public int GetEventOrganizersCount(int eventId) {
+            return _context.EventOrganizers.Where(eo => eo.Event.EventId == eventId).Count();
+        }
+
         public UserEventOrganizerViewModel GetManagedEvents(User theUser) {
             return new UserEventOrganizerViewModel {
                 UserId = theUser.UserId,

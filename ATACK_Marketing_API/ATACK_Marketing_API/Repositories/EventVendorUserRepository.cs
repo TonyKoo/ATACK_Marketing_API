@@ -14,6 +14,22 @@ namespace ATACK_Marketing_API.Repositories {
             _context = context;
         }
 
+        public int GetEventVendorUsersCount(int eventVendorId) {
+            return _context.EventVendorUsers.Where(evu => evu.EventVendor.EventVendorId == eventVendorId).Count();
+        }
+
+        public EventVendorUserListViewModel GetEventVendorUsers(EventVendor eventVendor) {
+            return new EventVendorUserListViewModel {
+                EventVendorId = eventVendor.EventVendorId,
+                EventId = eventVendor.Event.EventId,
+                EventName = eventVendor.Event.EventName,
+                VendorUsers = _context.EventVendorUsers.Where(evu => evu.EventVendor == eventVendor)
+                                                       .Select(evu => new EventVendorUserDetailViewModel { 
+                                                           UserEmail = evu.User.Email
+                                                       }).ToList()
+            };
+        }
+
         public EventVendorUserManagedViewModel GetEventVendorUserList(User theUser) {
             return new EventVendorUserManagedViewModel {
                 UserEmail = theUser.Email,

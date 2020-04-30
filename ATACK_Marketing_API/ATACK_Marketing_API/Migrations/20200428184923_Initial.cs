@@ -8,6 +8,25 @@ namespace ATACK_Marketing_API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "UserAudit",
+                columns: table => new
+                {
+                    UserAuditId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventDateTime = table.Column<DateTime>(nullable: false),
+                    GranterUid = table.Column<string>(nullable: true),
+                    GranterEmail = table.Column<string>(nullable: true),
+                    GrantPermission = table.Column<bool>(nullable: false),
+                    PermissionType = table.Column<string>(nullable: true),
+                    ModifiedUid = table.Column<string>(nullable: true),
+                    ModifiedEmail = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAudit", x => x.UserAuditId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -23,19 +42,32 @@ namespace ATACK_Marketing_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "VendorAudit",
+                columns: table => new
+                {
+                    VendorAuditId = table.Column<int>(nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    EventDateTime = table.Column<DateTime>(nullable: false),
+                    UserUid = table.Column<string>(nullable: true),
+                    UserEmail = table.Column<string>(nullable: true),
+                    Operation = table.Column<string>(nullable: true),
+                    Detail = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VendorAudit", x => x.VendorAuditId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Vendors",
                 columns: table => new
                 {
                     VendorId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    VendorName = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
                     Email = table.Column<string>(nullable: true),
-                    Address = table.Column<string>(nullable: true),
-                    City = table.Column<string>(nullable: true),
-                    Province = table.Column<string>(nullable: true),
-                    PostalCode = table.Column<string>(nullable: true),
-                    Country = table.Column<string>(nullable: true)
+                    Website = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -136,7 +168,7 @@ namespace ATACK_Marketing_API.Migrations
                     EventVendorId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     VendorId = table.Column<int>(nullable: false),
-                    EventId = table.Column<int>(nullable: true)
+                    EventId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -146,7 +178,7 @@ namespace ATACK_Marketing_API.Migrations
                         column: x => x.EventId,
                         principalTable: "Events",
                         principalColumn: "EventId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_EventVendors_Vendors_VendorId",
                         column: x => x.VendorId,
@@ -215,7 +247,7 @@ namespace ATACK_Marketing_API.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductName = table.Column<string>(nullable: true),
                     ProductDetails = table.Column<string>(nullable: true),
-                    EventVendorId = table.Column<int>(nullable: true)
+                    EventVendorId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -225,7 +257,7 @@ namespace ATACK_Marketing_API.Migrations
                         column: x => x.EventVendorId,
                         principalTable: "EventVendors",
                         principalColumn: "EventVendorId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -302,6 +334,12 @@ namespace ATACK_Marketing_API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "UserAudit");
+
+            migrationBuilder.DropTable(
+                name: "VendorAudit");
 
             migrationBuilder.DropTable(
                 name: "EventGuests");

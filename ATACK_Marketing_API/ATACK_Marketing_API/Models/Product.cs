@@ -10,7 +10,9 @@ namespace ATACK_Marketing_API.Models {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ProductId { get; set; }
         public String ProductName { get; set; }
-        public String ProductDetails { get; set; }
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal ProductPrice { get; set; }
         [Required]
         [ForeignKey("EventVendorId")]
         public virtual EventVendor EventVendor { get; set; }

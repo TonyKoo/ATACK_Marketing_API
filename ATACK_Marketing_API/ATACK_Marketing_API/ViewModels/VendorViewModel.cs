@@ -51,7 +51,7 @@ namespace ATACK_Marketing_API.ViewModels {
         public String Website { get; set; }
     }
 
-    public class VendorDeleteViewModel {
+    public class VendorInputDeleteViewModel {
         [Required]
         public String ConfirmDeleteName { get; set; }
     }
