@@ -1,5 +1,6 @@
 ﻿using ATACK_Marketing_API.Data;
 using ATACK_Marketing_API.Models;
+using ATACK_Marketing_API.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,26 @@ namespace ATACK_Marketing_API.Repositories {
 
         public UserRepository(MarketingDbContext context) {
             _context = context;
+        }
+
+        public UserViewModel GetUser(User theUser) {
+            return _context.Users.Where(u => u == theUser)
+                                 .Select(u => new UserViewModel {
+                                     Email = u.Email,
+                                     IsAdmin = u.IsAdmin,
+                                     IsEventOrganizer = _context.EventOrganizers.Any(eo => eo.User == u),
+                                     IsVendor = _context.EventVendorUsers.Any(evu => evu.User == u)
+                                 }).FirstOrDefault();
+        }
+
+        public List<UserViewModel> GetAllUsers() {
+            return _context.Users.OrderBy(u => u.Email)
+                                 .Select(u => new UserViewModel {
+                                     Email = u.Email,
+                                     IsAdmin = u.IsAdmin,
+                                     IsEventOrganizer = _context.EventOrganizers.Any(eo => eo.User == u),
+                                     IsVendor = _context.EventVendorUsers.Any(evu => evu.User == u)
+                                 }).ToList();
         }
 
         public bool CreateUser(string uid, string userEmail) {

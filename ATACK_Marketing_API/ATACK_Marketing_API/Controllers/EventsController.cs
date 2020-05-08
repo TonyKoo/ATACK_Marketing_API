@@ -76,7 +76,7 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">User Not Registered In DB</response>   
+        /// <response code="400">User Alredy Joined Event</response>   
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
         /// <response code="500">Database Error</response>   
@@ -128,7 +128,7 @@ namespace ATACK_Marketing_API.Controllers
             });
         }
 
-        /// <response code="400">User Not Registered In DB</response>   
+        /// <response code="400">User Hasn't Joined Event</response>   
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
         /// <response code="500">Database Error</response>   

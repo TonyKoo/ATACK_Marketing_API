@@ -25,6 +25,7 @@ namespace ATACK_Marketing_API.Repositories {
                                                                                                       EventId = eg.Event.EventId,
                                                                                                       EventName = eg.Event.EventName,
                                                                                                       EventStartDateTime = eg.Event.EventDateTime,
+                                                                                                      Venue = eg.Event.Venue,
                                                                                                       EventSubscriptions = _context.EventGuestSubscriptions
                                                                                                                                    .Where(egs => egs.EventVendor.Event == eg.Event &&
                                                                                                                                                  egs.EventGuest.User == theUser)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATACK_Marketing_API.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace ATACK_Marketing_API.ViewModels {
         public int EventId { get; set; }
         public String EventName { get; set; }
         public DateTime EventStartDateTime { get; set; }
+        public Venue Venue { get; set; }
         public ICollection<EventSubscriptionVendorDetailViewModel> EventSubscriptions { get; set; }
     }
 

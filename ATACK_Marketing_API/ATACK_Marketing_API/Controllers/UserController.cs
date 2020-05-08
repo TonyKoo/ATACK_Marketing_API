@@ -47,12 +47,42 @@ namespace ATACK_Marketing_API.Controllers
                 return NotFound(new { Message = "User Not Found In DB" });
             }
 
-            return Ok(new UserViewModel {
-                Email = theUser.Email,
-                IsAdmin = theUser.IsAdmin,
-                EventsOrganizing = _context.EventOrganizers.Where(eo => eo.User == theUser).Count(),
-                VendorsManaged = _context.EventVendorUsers.Where(evu => evu.User == theUser).Count()
-            });
+            UserRepository userRepo = new UserRepository(_context);
+
+            return Ok(userRepo.GetUser(theUser));
+        }
+
+        /// <response code="401">Missing Authentication Token</response>
+        /// <response code="403">Users Email is Not Verified / Insufficient Permissions</response>
+        /// <response code="404">Cannot Find Users Account</response>   
+        [SwaggerResponse(200, "List Of All Users Email, Admin Privileges and Event/Vendor Membership Counts", typeof(UserViewModel))]
+        [SwaggerOperation(
+            Summary = "Gets List Of All Users",
+            Description = "Requires Authentication<br>" +
+                          "**Privileges:** Admin, Event Organizer"
+
+        )]
+        [Produces("application/json")]
+        [HttpGet("userlist")]
+        public IActionResult GetUserList() {
+            if (!Validate.VerifiedUser(HttpContext.User)) {
+                return StatusCode(403, new { Message = "Unverified User" });
+            }
+
+            //Permission Check
+            User theUser = Retrieve.User(HttpContext.User, _context);
+
+            if (!theUser.IsAdmin) {
+                EventOrganizer eventOrganizer = _context.EventOrganizers.FirstOrDefault(eo => eo.User == theUser);
+
+                if (eventOrganizer == null) {
+                    return StatusCode(403, new { Message = "Insufficient Permissions (Admin or Event Organizer)" });
+                }
+            }
+
+            UserRepository userRepo = new UserRepository(_context);
+
+            return Ok(userRepo.GetAllUsers());
         }
 
         /// <response code="400">User Already Exists</response>
@@ -98,8 +128,8 @@ namespace ATACK_Marketing_API.Controllers
                                   new UserViewModel {
                                       Email = userEmail,
                                       IsAdmin = false,
-                                      EventsOrganizing = 0,
-                                      VendorsManaged = 0
+                                      IsEventOrganizer = false,
+                                      IsVendor = false
                                   });
         }
 
@@ -155,12 +185,7 @@ namespace ATACK_Marketing_API.Controllers
                 return StatusCode(500, new { Message = "User DB Error" });
             }
 
-            return Ok(new UserViewModel {
-                Email = userToElevate.Email,
-                IsAdmin = userToElevate.IsAdmin,
-                EventsOrganizing = _context.EventOrganizers.Where(eo => eo.User == userToElevate).Count(),
-                VendorsManaged = _context.EventVendorUsers.Where(evu => evu.User == userToElevate).Count()
-            });
+            return Ok(userRepo.GetUser(userToElevate));
         }
 
         /// <response code="400">Insufficient Permissions To Modify Users</response>
@@ -199,27 +224,22 @@ namespace ATACK_Marketing_API.Controllers
             }
 
             //Verify User To Elevate Exists
-            User userToElevate = _context.Users.FirstOrDefault(u => u.Email == emailToDemote.UserEmailToModify);
+            User userToDemote = _context.Users.FirstOrDefault(u => u.Email == emailToDemote.UserEmailToModify);
 
-            if (userToElevate == null) {
+            if (userToDemote == null) {
                 return NotFound(new { Message = "Target User Not Found In DB" });
-            } else if (!userToElevate.IsAdmin) {
+            } else if (!userToDemote.IsAdmin) {
                 return BadRequest(new { Message = "Target User Has No Admin Rights" });
             }
 
             UserRepository userRepo = new UserRepository(_context);
 
             //Perform Elevation
-            if (!userRepo.DemoteAdminUser(requestingUser, userToElevate)) {
+            if (!userRepo.DemoteAdminUser(requestingUser, userToDemote)) {
                 return StatusCode(500, new { Message = "User DB Error" });
             }
 
-            return Ok(new UserViewModel {
-                Email = userToElevate.Email,
-                IsAdmin = userToElevate.IsAdmin,
-                EventsOrganizing = 0,
-                VendorsManaged = 0
-            });
+            return Ok(userRepo.GetUser(userToDemote));
         }
 
         /// <response code="401">Missing Authentication Token</response>

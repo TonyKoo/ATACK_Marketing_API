@@ -21,6 +21,7 @@ namespace ATACK_Marketing_API.Repositories {
         public EventVendorUserListViewModel GetEventVendorUsers(EventVendor eventVendor) {
             return new EventVendorUserListViewModel {
                 EventVendorId = eventVendor.EventVendorId,
+                VendorName = eventVendor.Vendor.Name,
                 EventId = eventVendor.Event.EventId,
                 EventName = eventVendor.Event.EventName,
                 VendorUsers = _context.EventVendorUsers.Where(evu => evu.EventVendor == eventVendor)
@@ -37,10 +38,12 @@ namespace ATACK_Marketing_API.Repositories {
                                                             .OrderBy(evu => evu.EventVendor.Vendor.Name)
                                                             .Select(evu => new EventVendorUserManagedDetailViewModel {
                                                                 EventVendorId = evu.EventVendor.EventVendorId,
+                                                                VendorId = evu.EventVendor.Vendor.VendorId,
+                                                                VendorName = evu.EventVendor.Vendor.Name,
                                                                 EventId = evu.EventVendor.Event.EventId,
                                                                 EventName = evu.EventVendor.Event.EventName,
-                                                                VendorId = evu.EventVendor.Vendor.VendorId,
-                                                                VendorName = evu.EventVendor.Vendor.Name
+                                                                EventStartDateTime = evu.EventVendor.Event.EventDateTime,
+                                                                Venue = evu.EventVendor.Event.Venue
                                                             }).ToList()
             };
         }
