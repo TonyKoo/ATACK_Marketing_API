@@ -8,7 +8,7 @@ API connecting to .NET Database for mobile and web Atack Marketing applications 
 - .NET Core 3.1
 - SQL Server
 
-## Swagger Documentation
+## API
 ![picture](media/1.png)
 ![picture](media/2.png)
 ![picture](media/3.png)
