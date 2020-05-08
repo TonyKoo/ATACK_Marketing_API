@@ -246,7 +246,7 @@ namespace ATACK_Marketing_API.Migrations
                     ProductId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductName = table.Column<string>(nullable: true),
-                    ProductDetails = table.Column<string>(nullable: true),
+                    ProductPrice = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     EventVendorId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>

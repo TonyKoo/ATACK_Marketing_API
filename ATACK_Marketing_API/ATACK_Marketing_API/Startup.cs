@@ -97,12 +97,12 @@ namespace ATACK_Marketing_API {
             services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options => {
-                options.Authority = "https://securetoken.google.com/atack-marketing";
+                options.Authority = "https://securetoken.google.com/<app name>";
                 options.TokenValidationParameters = new TokenValidationParameters {
                     ValidateIssuer = true,
-                    ValidIssuer = "https://securetoken.google.com/atack-marketing",
+                    ValidIssuer = "https://securetoken.google.com/<app name>",
                     ValidateAudience = true,
-                    ValidAudience = "atack-marketing",
+                    ValidAudience = "<firebase app name>",
                     ValidateLifetime = true
                 };
             });

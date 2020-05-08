@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ATACK_Marketing_API.Controllers
 {
-    //[ApiExplorerSettings(IgnoreApi = true)]
+    [ApiExplorerSettings(IgnoreApi = true)]
     [Route("api/[controller]")]
     [ApiController]
     public class ExampleController : ControllerBase {

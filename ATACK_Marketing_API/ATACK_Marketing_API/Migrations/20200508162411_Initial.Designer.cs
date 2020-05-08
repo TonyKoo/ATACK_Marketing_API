@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ATACK_Marketing_API.Migrations
 {
     [DbContext(typeof(MarketingDbContext))]
-    [Migration("20200430013440_addprice")]
-    partial class addprice
+    [Migration("20200508162411_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
