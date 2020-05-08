@@ -96,8 +96,8 @@ namespace ATACK_Marketing_API.Swagger {
                 return new UserViewModel {
                     Email = "Same_Same@Different.com",
                     IsAdmin = false,
-                    EventsOrganizing = 5,
-                    VendorsManaged = 0
+                    IsEventOrganizer = false,
+                    IsVendor = false
                 };
             }
         }
@@ -131,6 +131,11 @@ namespace ATACK_Marketing_API.Swagger {
                             EventId = 1,
                             EventName = "I Know I Know",
                             EventStartDateTime = new DateTime(2020, 03, 22, 17, 30, 00),
+                            Venue = new Venue{
+                                VenueId = 1,
+                                VenueName = "Rogers Arena",
+                                Website = "https://rogersarena.ca"
+                            },
                             EventSubscriptions = new List<EventSubscriptionVendorDetailViewModel> {
                                 new EventSubscriptionVendorDetailViewModel {
                                     EventVendorId = 1,
@@ -435,22 +440,55 @@ namespace ATACK_Marketing_API.Swagger {
                     UserEventVendors = new List<EventVendorUserManagedDetailViewModel> {
                         new EventVendorUserManagedDetailViewModel {
                             EventVendorId = 1,
+                            VendorId = 5,
+                            VendorName = "Tong Enterprises",
                             EventId = 1,
                             EventName = "I Know I Know",
-                            VendorId = 5,
-                            VendorName = "Tong Enterprises"
+                            EventStartDateTime = new DateTime(2020, 03, 22, 17, 30, 00),
+                            Venue = new Venue {
+                                VenueId = 1,
+                                VenueName = "Rogers Arena",
+                                Website = "https://rogersarena.com/"
+                            }
                         },
                         new EventVendorUserManagedDetailViewModel {
                             EventVendorId = 5,
+                            VendorId = 10,
+                            VendorName = "Petcetera",
                             EventId = 2,
                             EventName = "Catz & Dogz",
-                            VendorId = 10,
-                            VendorName = "Petcetera"
+                            EventStartDateTime = new DateTime(2020, 05, 28, 18, 30, 00),
+                            Venue = new Venue {
+                                VenueId = 2,
+                                VenueName = "Vancouver Convention Centre",
+                                Website = "https://www.vancouverconventioncentre.com/"
+                            }
                         }
                     }
                 };
             }
         }
+
+    public class EventVendorUserListViewModelExample : IExamplesProvider<EventVendorUserListViewModel> {
+            public EventVendorUserListViewModel GetExamples() {
+                return new EventVendorUserListViewModel {
+                    EventVendorId = 3,
+                    VendorName = "7-11 Canada",
+                    EventId = 1,
+                    EventName = "I Know I Know",
+                    VendorUsers = new List<EventVendorUserDetailViewModel> {
+                        new EventVendorUserDetailViewModel {
+                            UserEmail = "Ahmed@camel.com"
+                        },
+                        new EventVendorUserDetailViewModel {
+                            UserEmail = "Albert@thebest.com"
+                        }
+                    }
+                };
+            }
+        }
+
+        
 
         public class EventVendorUserInputViewModelExample : IExamplesProvider<EventVendorUserInputViewModel> {
             public EventVendorUserInputViewModel GetExamples() {

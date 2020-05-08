@@ -73,7 +73,8 @@ namespace ATACK_Marketing_API.Controllers
                 return NotFound(new { Message = "Event Not Found" });
             }
 
-            EventVendor theEventVendor = _context.EventVendors.FirstOrDefault(ev => ev.EventVendorId == eventVendorId);
+            EventVendor theEventVendor = _context.EventVendors.FirstOrDefault(ev => ev.EventVendorId == eventVendorId && 
+                                                                                    ev.Event.EventId == eventId);
 
             if (theEventVendor == null) {
                 return NotFound(new { Message = "Event Vendor Not Found" });

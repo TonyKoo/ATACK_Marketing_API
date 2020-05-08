@@ -15,7 +15,8 @@ namespace ATACK_Marketing_API.Repositories {
         }
 
         public List<VenueViewModel> getVenues() {
-            return _context.Venues.Select(v => new VenueViewModel { 
+            return _context.Venues.OrderBy(v => v.VenueName)
+                .Select(v => new VenueViewModel { 
                 VenueId = v.VenueId,
                 VenueName = v.VenueName,
                 Website = v.Website

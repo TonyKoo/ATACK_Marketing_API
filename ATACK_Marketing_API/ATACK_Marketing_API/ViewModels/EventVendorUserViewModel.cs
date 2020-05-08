@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATACK_Marketing_API.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -26,14 +27,18 @@ namespace ATACK_Marketing_API.ViewModels {
 
     public class EventVendorUserManagedDetailViewModel {
         public int EventVendorId { get; set; }
-        public int EventId { get; set; }
-        public String EventName { get; set; }
         public int VendorId { get; set; }
         public String VendorName { get; set; }
+        public int EventId { get; set; }
+        public String EventName { get; set; }
+        public DateTime EventStartDateTime { get; set; }
+        public Venue Venue{ get; set; }
+
     }
 
     public class EventVendorUserListViewModel {
         public int EventVendorId { get; set; }
+        public String VendorName { get; set; }
         public int EventId { get; set; }
         public String EventName { get; set; }
         public ICollection<EventVendorUserDetailViewModel> VendorUsers { get; set; }

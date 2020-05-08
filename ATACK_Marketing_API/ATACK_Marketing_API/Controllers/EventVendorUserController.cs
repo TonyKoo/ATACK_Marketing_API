@@ -56,7 +56,7 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="401">Missing Authentication Token</response>
         /// <response code="403">Users Email is Not Verified</response>
         /// <response code="404">Cannot Find Users Account</response>   
-        [SwaggerResponse(200, "Event Vendor Users", typeof(EventVendorUserManagedViewModel))]
+        [SwaggerResponse(200, "List Of Event Vendor Users For The Event Vendor", typeof(EventVendorUserListViewModel))]
         [SwaggerOperation(
             Summary = "Gets List Of Users Managing The Event Vendor",
             Description = "Requires Authentication<br>" +
@@ -98,7 +98,7 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
         /// <response code="404">Cannot Find Users Account OR Event</response>   
         /// <response code="500">Database/Server Error</response>  
-        [SwaggerResponse(201, "Event Vendor User Was Added To", typeof(EventVendorUserResultViewModel))]
+        [SwaggerResponse(200, "Event Vendor User Was Added To", typeof(EventVendorUserResultViewModel))]
         [SwaggerOperation(
             Summary = "Adds A User To Manage An Event Vendor",
             Description = "Requires Authentication<br>" +
@@ -164,7 +164,7 @@ namespace ATACK_Marketing_API.Controllers
         /// <response code="403">Users Email is Not Verified / Insufficient Rights To Modify Users</response>
         /// <response code="404">Cannot Find Users Account OR Event</response>   
         /// <response code="500">Database/Server Error</response>  
-        [SwaggerResponse(201, "Added Event Organizer And Event Information", typeof(EventVendorUserResultViewModel))]
+        [SwaggerResponse(200, "Removed Event Organizer And Event Information", typeof(EventVendorUserResultViewModel))]
         [SwaggerOperation(
             Summary = "Removes A User From Managing An Event Vendor",
             Description = "Requires Authentication<br>" +

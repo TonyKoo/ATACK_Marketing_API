@@ -17,10 +17,10 @@ namespace ATACK_Marketing_API.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class VendorManagement : ControllerBase {
+    public class VendorManagementController : ControllerBase {
         private readonly MarketingDbContext _context;
 
-        public VendorManagement(MarketingDbContext context) {
+        public VendorManagementController(MarketingDbContext context) {
             _context = context;
         }
 
