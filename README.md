@@ -1,4 +1,4 @@
-# Industry - SSD
+# ATACK Marketing API (Industry Project - SSD)
 API connecting to .NET Database for mobile and web Atack Marketing applications created by Athena, Tony, Albert, Crystal, Kasra. Copyright 2020.
 
 ## Documentation
